@@ -1,0 +1,243 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===== USER & AUTHENTICATION =====
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String   // bcrypt hashed
+  role      UserRole @default(USER)
+  
+  // Profile relationships
+  brandProfile      BrandProfile?
+  influencerProfile InfluencerProfile?
+  adminProfile      AdminProfile?
+  
+  // Activity
+  postedCampaigns    Campaign[]        @relation("BrandCreated")
+  campaignApplications CampaignApplication[]
+  sentMessages       Message[]         @relation("Sender")
+  receivedMessages   Message[]         @relation("Receiver")
+  givenReviews       Review[]          @relation("Reviewer")
+  receivedReviews    Review[]          @relation("Reviewed")
+  
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  
+  @@index([email])
+  @@index([role])
+  @@index([createdAt])
+}
+
+enum UserRole {
+  BRAND
+  INFLUENCER
+  ADMIN
+  USER // fallback
+}
+
+// ===== PROFILES =====
+model BrandProfile {
+  id                String @id @default(cuid())
+  userId            String @unique
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  companyName       String
+  industry          String
+  bio               String?
+  website           String?
+  budgetTier        BudgetTier
+  targetInfluencerType String? // niche/category they seek
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+model InfluencerProfile {
+  id                String @id @default(cuid())
+  userId            String @unique
+  user              User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  motto             String?
+  bio               String?
+  niche             String
+  platform          String // Instagram, TikTok, YouTube, etc.
+  followerCount     Int
+  engagementRate    Float // 0-100 percentage
+  location          String?
+  profilePhoto      String? // URL to uploaded photo
+  
+  // Portfolio items (up to 10)
+  portfolioItems    PortfolioItem[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([niche])
+  @@index([platform])
+  @@index([followerCount])
+  @@index([engagementRate])
+}
+
+model PortfolioItem {
+  id                String @id @default(cuid())
+  influencerProfileId String
+  influencerProfile InfluencerProfile @relation(fields: [influencerProfileId], references: [id], onDelete: Cascade)
+  
+  url               String
+  description       String @db.VarChar(200)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([influencerProfileId])
+}
+
+model AdminProfile {
+  id        String @id @default(cuid())
+  userId    String @unique
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  permissions String[] @default(["manage_users", "view_reports"])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([userId])
+}
+
+enum BudgetTier {
+  TIER_10K_50K      // PKR 10k–50k
+  TIER_50K_200K     // PKR 50k–200k
+  TIER_200K_PLUS    // PKR 200k+
+}
+
+// ===== CAMPAIGNS =====
+model Campaign {
+  id                String @id @default(cuid())
+  brandId           String
+  brand             User   @relation("BrandCreated", fields: [brandId], references: [id], onDelete: Cascade)
+  
+  title             String
+  productService    String // What's being promoted
+  requiredNiche     String
+  budgetTier        BudgetTier
+  influencersNeeded Int
+  deadline          DateTime
+  description       String
+  
+  status            CampaignStatus @default(OPEN)
+  
+  // Relationships
+  applications      CampaignApplication[]
+  messages          Message[]
+  reviews           Review[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([brandId])
+  @@index([requiredNiche])
+  @@index([budgetTier])
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum CampaignStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  CLOSED
+}
+
+// ===== CAMPAIGN APPLICATIONS =====
+model CampaignApplication {
+  id                String @id @default(cuid())
+  campaignId        String
+  campaign          Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  influencerId      String
+  influencer        User   @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  
+  status            ApplicationStatus @default(PENDING)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([campaignId, influencerId])
+  @@index([campaignId])
+  @@index([influencerId])
+  @@index([status])
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+// ===== MESSAGING =====
+model Message {
+  id                String @id @default(cuid())
+  campaignId        String
+  campaign          Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  senderId          String
+  sender            User   @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  
+  receiverId        String
+  receiver          User   @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  
+  text              String
+  isRead            Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([campaignId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ===== REVIEWS & RATINGS =====
+model Review {
+  id                String @id @default(cuid())
+  campaignId        String
+  campaign          Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  reviewerId        String
+  reviewer          User   @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  
+  reviewedUserId    String
+  reviewedUser      User   @relation("Reviewed", fields: [reviewedUserId], references: [id], onDelete: Cascade)
+  
+  rating            Int // 1-5 stars
+  comment           String
+  
+  isReported        Boolean @default(false)
+  reportReason      String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([campaignId, reviewerId, reviewedUserId])
+  @@index([campaignId])
+  @@index([reviewerId])
+  @@index([reviewedUserId])
+  @@index([rating])
+}
