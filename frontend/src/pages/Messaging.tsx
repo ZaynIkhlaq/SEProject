@@ -5,6 +5,7 @@ interface MessageThread {
   campaignId: string;
   otherPartyId: string;
   otherPartyName: string;
+  lastMessage?: Message;
   unreadCount: number;
 }
 

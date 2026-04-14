@@ -180,7 +180,7 @@ export class AuthService {
     return jwt.sign(
       { id, email, role },
       process.env.JWT_SECRET || 'secret',
-      { expiresIn: process.env.JWT_EXPIRY || '15m' }
+      { expiresIn: process.env.JWT_EXPIRY || '15m' } as any
     );
   }
 
@@ -188,7 +188,7 @@ export class AuthService {
     return jwt.sign(
       { id },
       process.env.JWT_REFRESH_SECRET || 'refresh-secret',
-      { expiresIn: process.env.JWT_REFRESH_EXPIRY || '7d' }
+      { expiresIn: process.env.JWT_REFRESH_EXPIRY || '7d' } as any
     );
   }
 }
