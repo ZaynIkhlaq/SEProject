@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: influencerhub-db
+    environment:
+      POSTGRES_USER: influencer
+      POSTGRES_PASSWORD: password123
+      POSTGRES_DB: influencerhub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U influencer"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - influencerhub-network
+
+  # Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: influencerhub-api
+    environment:
+      NODE_ENV: production
+      PORT: 5001
+      DATABASE_URL: "postgresql://influencer:password123@postgres:5432/influencerhub"
+      JWT_SECRET: "dev-secret-key-change-in-production-32bytes-minimum"
+      JWT_REFRESH_SECRET: "dev-refresh-secret-key-change-in-production-32bytes-minimum"
+      ALLOWED_ORIGINS: "http://localhost:3000,http://localhost:3001"
+    ports:
+      - "5001:5001"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - influencerhub-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: influencerhub-web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - influencerhub-network
+    environment:
+      VITE_API_URL: "http://localhost:5001/api/v1"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  influencerhub-network:
+    driver: bridge
