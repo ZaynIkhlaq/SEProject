@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { RecommendedInfluencer } from '../../shared/types';
+import { useAuth } from '../../context/AuthContext';
 
 const RecommendedInfluencers: React.FC = () => {
   const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
+  const { api } = useAuth();
   const [recommendations, setRecommendations] = useState<RecommendedInfluencer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -19,7 +20,7 @@ const RecommendedInfluencers: React.FC = () => {
   const fetchRecommendations = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/recommendations/${campaignId}`);
+      const res = await api.get(`/recommendations/${campaignId}`);
       setRecommendations(res.data.data);
       setError('');
     } catch (err: any) {
@@ -48,7 +49,7 @@ const RecommendedInfluencers: React.FC = () => {
           <p className="text-red-700">{error}</p>
         </div>
         <button
-          onClick={() => navigate('/brand')}
+          onClick={() => navigate('/brand/dashboard')}
           className="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
         >
           Back to Dashboard
@@ -62,7 +63,7 @@ const RecommendedInfluencers: React.FC = () => {
       {/* Header */}
       <div className="mb-8">
         <button
-          onClick={() => navigate(`/campaign/${campaignId}`)}
+          onClick={() => navigate(`/brand/campaign/${campaignId}`)}
           className="text-blue-600 hover:text-blue-700 mb-4"
         >
           ← Back to Campaign
@@ -77,7 +78,7 @@ const RecommendedInfluencers: React.FC = () => {
         <div className="bg-gray-50 rounded-lg p-12 text-center">
           <p className="text-gray-600 mb-4">No influencers match your campaign criteria</p>
           <button
-            onClick={() => navigate('/brand')}
+            onClick={() => navigate('/brand/dashboard')}
             className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
           >
             Back to Dashboard
@@ -223,7 +224,7 @@ const RecommendedInfluencers: React.FC = () => {
                 <button
                   onClick={() => {
                     /* Will navigate to apply flow */
-                    navigate('/brand');
+                    navigate('/brand/dashboard');
                   }}
                   className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >

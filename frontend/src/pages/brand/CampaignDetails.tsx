@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { Campaign, CampaignApplication, InfluencerProfile } from '../../shared/types';
+import { useAuth } from '../../context/AuthContext';
 
 interface ApplicationWithProfile extends CampaignApplication {
   influencerProfile?: InfluencerProfile;
@@ -11,6 +11,7 @@ interface ApplicationWithProfile extends CampaignApplication {
 const CampaignDetails: React.FC = () => {
   const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
+  const { api } = useAuth();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [applications, setApplications] = useState<ApplicationWithProfile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,8 +26,8 @@ const CampaignDetails: React.FC = () => {
     try {
       setLoading(true);
       const [campaignRes, applicationsRes] = await Promise.all([
-        axios.get(`/api/campaigns/${campaignId}`),
-        axios.get(`/api/applications/campaign/${campaignId}`)
+        api.get(`/campaigns/${campaignId}`),
+        api.get(`/applications/campaign/${campaignId}`)
       ]);
 
       setCampaign(campaignRes.data.data);
@@ -35,7 +36,7 @@ const CampaignDetails: React.FC = () => {
       const appsWithProfiles = await Promise.all(
         applicationsRes.data.data.map(async (app: any) => {
           try {
-            const profileRes = await axios.get(`/api/profiles/influencer/${app.influencerId}`);
+            const profileRes = await api.get(`/profiles/influencer/${app.influencerId}`);
             return {
               ...app,
               influencerProfile: profileRes.data.data
@@ -58,7 +59,7 @@ const CampaignDetails: React.FC = () => {
   const handleAcceptApplication = async (applicationId: string) => {
     try {
       setActionLoading(true);
-      await axios.patch(`/api/applications/${applicationId}/accept`);
+      await api.patch(`/applications/${applicationId}/accept`);
       
       setApplications(applications.map(app =>
         app.id === applicationId ? { ...app, status: 'ACCEPTED' } : app
@@ -73,7 +74,7 @@ const CampaignDetails: React.FC = () => {
   const handleRejectApplication = async (applicationId: string) => {
     try {
       setActionLoading(true);
-      await axios.patch(`/api/applications/${applicationId}/reject`);
+      await api.patch(`/applications/${applicationId}/reject`);
       
       setApplications(applications.map(app =>
         app.id === applicationId ? { ...app, status: 'REJECTED' } : app
@@ -90,7 +91,7 @@ const CampaignDetails: React.FC = () => {
 
     try {
       setActionLoading(true);
-      await axios.post(`/api/campaigns/${campaignId}/close`);
+      await api.post(`/campaigns/${campaignId}/close`);
       setCampaign(prev => prev ? { ...prev, status: 'CLOSED' } : null);
       alert('Campaign closed successfully');
     } catch (err: any) {
@@ -115,7 +116,7 @@ const CampaignDetails: React.FC = () => {
           <p className="text-red-700">{error || 'Campaign not found'}</p>
         </div>
         <button
-          onClick={() => navigate('/brand')}
+          onClick={() => navigate('/brand/dashboard')}
           className="mt-4 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
         >
           Back to Dashboard
@@ -132,7 +133,7 @@ const CampaignDetails: React.FC = () => {
       {/* Header */}
       <div className="mb-8">
         <button
-          onClick={() => navigate('/brand')}
+          onClick={() => navigate('/brand/dashboard')}
           className="text-blue-600 hover:text-blue-700 mb-4"
         >
           ← Back to Dashboard

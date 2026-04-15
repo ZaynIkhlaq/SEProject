@@ -21,8 +21,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   const brandNavItems = [
     { label: 'Dashboard', path: '/brand/dashboard', icon: '📊' },
-    { label: 'Campaigns', path: '/brand/campaign', icon: '📢' },
-    { label: 'Recommendations', path: '/brand/campaign', icon: '✨' },
+    { label: 'Campaigns', path: '/brand/dashboard', icon: '📢' },
+    { label: 'Recommendations', path: '/brand/dashboard', icon: '✨' },
     { label: 'Messages', path: '/messages', icon: '💬' },
     { label: 'Profile', path: '/brand/profile', icon: '👤' },
   ];

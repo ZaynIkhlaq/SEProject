@@ -1,4 +1,4 @@
-import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect, useMemo, useCallback } from 'react';
 import axios, { AxiosInstance } from 'axios';
 
 export interface User {
@@ -27,43 +27,119 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(localStorage.getItem('accessToken'));
   const [refreshToken, setRefreshToken] = useState<string | null>(localStorage.getItem('refreshToken'));
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Create axios instance with auth headers
-  const api = axios.create({
+  const api = useMemo(() => axios.create({
     baseURL: '/api/v1',
     headers: {
       'Content-Type': 'application/json',
     },
-  });
+  }), []);
 
-  // Add token to requests
-  api.interceptors.request.use((config) => {
+  const clearAuthState = useCallback(() => {
+    setUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    delete api.defaults.headers.common.Authorization;
+    delete axios.defaults.headers.common.Authorization;
+  }, [api]);
+
+  const logout = useCallback(() => {
+    clearAuthState();
+  }, [clearAuthState]);
+
+  // Keep both API clients in sync for pages that still use raw axios.
+  useEffect(() => {
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      api.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+      axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+    } else {
+      delete api.defaults.headers.common.Authorization;
+      delete axios.defaults.headers.common.Authorization;
     }
-    return config;
-  });
+  }, [accessToken, api]);
 
-  // Handle token refresh
-  api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-      if (error.response?.status === 401 && refreshToken) {
-        try {
-          const response = await axios.post('/api/v1/auth/refresh', { refreshToken });
-          const newAccessToken = response.data.data.accessToken;
-          setAccessToken(newAccessToken);
-          localStorage.setItem('accessToken', newAccessToken);
-          error.config.headers.Authorization = `Bearer ${newAccessToken}`;
-          return api(error.config);
-        } catch {
-          logout();
+  useEffect(() => {
+    let mounted = true;
+
+    const initializeAuth = async () => {
+      const storedAccessToken = localStorage.getItem('accessToken');
+      const storedRefreshToken = localStorage.getItem('refreshToken');
+
+      if (!storedAccessToken) {
+        if (mounted) {
+          setIsLoading(false);
+        }
+        return;
+      }
+
+      try {
+        const response = await axios.get('/api/v1/auth/me', {
+          headers: {
+            Authorization: `Bearer ${storedAccessToken}`,
+          },
+        });
+
+        if (!mounted) return;
+
+        setUser(response.data.data);
+        setAccessToken(storedAccessToken);
+        setRefreshToken(storedRefreshToken);
+      } catch {
+        if (mounted) {
+          clearAuthState();
+        }
+      } finally {
+        if (mounted) {
+          setIsLoading(false);
         }
       }
-      return Promise.reject(error);
-    }
-  );
+    };
+
+    initializeAuth();
+
+    return () => {
+      mounted = false;
+    };
+  }, [clearAuthState]);
+
+  // Handle token refresh
+  useEffect(() => {
+    const responseInterceptor = api.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && refreshToken && !originalRequest?._retry) {
+          originalRequest._retry = true;
+
+          try {
+            const response = await axios.post('/api/v1/auth/refresh', { refreshToken });
+            const newAccessToken = response.data.data.accessToken;
+
+            setAccessToken(newAccessToken);
+            localStorage.setItem('accessToken', newAccessToken);
+
+            originalRequest.headers = originalRequest.headers || {};
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+            return api(originalRequest);
+          } catch {
+            logout();
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      api.interceptors.response.eject(responseInterceptor);
+    };
+  }, [api, refreshToken, logout]);
 
   const login = async (email: string, password: string, role: 'brand' | 'influencer') => {
     setIsLoading(true);
@@ -118,14 +194,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const logout = () => {
-    setUser(null);
-    setAccessToken(null);
-    setRefreshToken(null);
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
   };
 
   return (
