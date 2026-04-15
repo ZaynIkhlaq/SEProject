@@ -54,7 +54,7 @@
   /* Primary button */
   .btn-primary {
     @apply px-4 py-2.5 bg-ramp-purple-600 text-white font-semibold rounded-md
-           hover:bg-ramp-purple-700 active:bg-ramp-purple-800 
+           hover:bg-ramp-purple-700
            disabled:opacity-50 disabled:cursor-not-allowed
            transition-all duration-200 shadow-ramp-sm
            focus:outline-none focus:ring-2 focus:ring-ramp-purple-500 focus:ring-offset-2;
@@ -64,7 +64,7 @@
   .btn-secondary {
     @apply px-4 py-2.5 bg-ramp-gray-100 text-ramp-black dark:bg-ramp-gray-800 dark:text-white
            font-semibold rounded-md hover:bg-ramp-gray-200 dark:hover:bg-ramp-gray-700
-           active:bg-ramp-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
+           disabled:opacity-50 disabled:cursor-not-allowed
            transition-all duration-200 border border-ramp-gray-200 dark:border-ramp-gray-700
            focus:outline-none focus:ring-2 focus:ring-ramp-purple-500 focus:ring-offset-2;
   }
