@@ -1,6 +1,9 @@
 import { prisma } from '../index';
 import { Campaign, CreateCampaignRequest, UpdateCampaignRequest, CampaignStatus } from '../shared/types';
 
+const VALID_NICHES = ['Fashion', 'Beauty', 'Tech', 'Fitness', 'Food', 'Travel', 'Lifestyle', 'Gaming'];
+const VALID_BUDGETS = ['TIER_10K_50K', 'TIER_50K_200K', 'TIER_200K_PLUS'];
+
 export class CampaignService {
   // US-3.1: Post a Campaign
   static async createCampaign(brandId: string, data: CreateCampaignRequest): Promise<Campaign> {
@@ -81,10 +84,16 @@ export class CampaignService {
     };
 
     if (filters?.niche) {
-      where.requiredNiche = { contains: filters.niche, mode: 'insensitive' };
+      if (!VALID_NICHES.includes(filters.niche)) {
+        throw new Error(`Invalid niche. Must be one of: ${VALID_NICHES.join(', ')}`);
+      }
+      where.requiredNiche = filters.niche;
     }
 
     if (filters?.budgetTier) {
+      if (!VALID_BUDGETS.includes(filters.budgetTier)) {
+        throw new Error('Invalid budget tier');
+      }
       where.budgetTier = filters.budgetTier;
     }
 

@@ -3,8 +3,42 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../index';
 import { RegisterBrandRequest, RegisterInfluencerRequest, AuthResponse, User } from '../shared/types';
 
+// Validate JWT secrets at startup
+const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+
+if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
+  throw new Error('FATAL: JWT_SECRET and JWT_REFRESH_SECRET must be set in environment variables');
+}
+
+// Password validation function
+function validatePassword(password: string): string | null {
+  if (!password || password.length < 8) {
+    return 'Password must be at least 8 characters long';
+  }
+  if (!/[A-Z]/.test(password)) {
+    return 'Password must contain at least one uppercase letter';
+  }
+  if (!/[a-z]/.test(password)) {
+    return 'Password must contain at least one lowercase letter';
+  }
+  if (!/[0-9]/.test(password)) {
+    return 'Password must contain at least one number';
+  }
+  if (!/[!@#$%^&*]/.test(password)) {
+    return 'Password must contain at least one special character (!@#$%^&*)';
+  }
+  return null;
+}
+
 export class AuthService {
   static async registerBrand(data: RegisterBrandRequest): Promise<AuthResponse> {
+    // Validate password
+    const passwordError = validatePassword(data.password);
+    if (passwordError) {
+      throw new Error(passwordError);
+    }
+
     // Check if user exists
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
@@ -59,6 +93,12 @@ export class AuthService {
   }
 
   static async registerInfluencer(data: RegisterInfluencerRequest): Promise<AuthResponse> {
+    // Validate password
+    const passwordError = validatePassword(data.password);
+    if (passwordError) {
+      throw new Error(passwordError);
+    }
+
     const existingUser = await prisma.user.findUnique({
       where: { email: data.email }
     });
@@ -153,7 +193,7 @@ export class AuthService {
 
   static async refreshToken(refreshToken: string): Promise<{ accessToken: string }> {
     try {
-      const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET || 'refresh-secret') as any;
+      const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as any;
       
       const user = await prisma.user.findUnique({
         where: { id: decoded.id },
@@ -179,7 +219,7 @@ export class AuthService {
   private static generateAccessToken(id: string, email: string, role: string): string {
     return jwt.sign(
       { id, email, role },
-      process.env.JWT_SECRET || 'secret',
+      JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRY || '15m' } as any
     );
   }
@@ -187,7 +227,7 @@ export class AuthService {
   private static generateRefreshToken(id: string): string {
     return jwt.sign(
       { id },
-      process.env.JWT_REFRESH_SECRET || 'refresh-secret',
+      JWT_REFRESH_SECRET,
       { expiresIn: process.env.JWT_REFRESH_EXPIRY || '7d' } as any
     );
   }

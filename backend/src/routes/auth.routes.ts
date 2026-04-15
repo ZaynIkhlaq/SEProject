@@ -1,12 +1,23 @@
 import { Router, Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { AuthService } from '../services/auth.service';
 import { RegisterBrandRequest, RegisterInfluencerRequest, LoginRequest } from '../shared/types';
 import { authMiddleware, AuthRequest } from '../middleware/auth';
 
 const router = Router();
 
+// Rate limiting for auth routes
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minute window
+  max: 5, // 5 attempts max
+  message: 'Too many authentication attempts. Please try again in 15 minutes.',
+  standardHeaders: true, // Return rate limit info in RateLimit-* headers
+  legacyHeaders: false, // Disable X-RateLimit-* headers
+  skip: (req) => process.env.NODE_ENV === 'development', // Skip in dev
+});
+
 // US-1.1: Brand Registration
-router.post('/register/brand', async (req: Request, res: Response) => {
+router.post('/register/brand', authLimiter, async (req: Request, res: Response) => {
   try {
     const { email, password, companyName, industry, budgetTier, targetInfluencerType } = req.body;
 
@@ -40,7 +51,7 @@ router.post('/register/brand', async (req: Request, res: Response) => {
 });
 
 // US-1.2: Influencer Registration
-router.post('/register/influencer', async (req: Request, res: Response) => {
+router.post('/register/influencer', authLimiter, async (req: Request, res: Response) => {
   try {
     const { email, password, niche, platform, followerCount, engagementRate } = req.body;
 
@@ -74,7 +85,7 @@ router.post('/register/influencer', async (req: Request, res: Response) => {
 });
 
 // US-1.3: Login with Email & Password
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', authLimiter, async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 

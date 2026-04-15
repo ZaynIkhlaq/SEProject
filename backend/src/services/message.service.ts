@@ -1,22 +1,70 @@
 import { prisma } from '../index';
 import { Message, MessageThread } from '../shared/types';
+import xss from 'xss';
 
 export class MessageService {
   // US-5.1: Send Message
   static async sendMessage(campaignId: string, senderId: string, receiverId: string, text: string): Promise<Message> {
-    // Verify campaign exists and users are collaborators
-    const application = await prisma.campaignApplication.findFirst({
+    // Get campaign to verify it exists and status
+    const campaign = await prisma.campaign.findUnique({
+      where: { id: campaignId }
+    });
+
+    if (!campaign) {
+      throw new Error('Campaign not found');
+    }
+
+    if (campaign.status === 'CLOSED' || campaign.status === 'COMPLETED') {
+      throw new Error('Cannot message on closed campaigns');
+    }
+
+    // Verify sender is influencer OR brand on this campaign
+    const senderApplication = await prisma.campaignApplication.findFirst({
       where: {
         campaignId,
-        OR: [
-          { influencerId: senderId },
-          { influencerId: receiverId }
-        ]
+        influencerId: senderId,
+        status: 'ACCEPTED'
       }
     });
 
-    if (!application) {
-      throw new Error('No approved collaboration for this campaign');
+    const senderIsBrand = campaign.brandId === senderId;
+
+    if (!senderApplication && !senderIsBrand) {
+      throw new Error('You are not part of this campaign');
+    }
+
+    // Verify valid receiver relationship
+    if (senderIsBrand) {
+      // Brand messaging influencer
+      const receiverApplication = await prisma.campaignApplication.findFirst({
+        where: {
+          campaignId,
+          influencerId: receiverId,
+          status: 'ACCEPTED'
+        }
+      });
+      if (!receiverApplication) {
+        throw new Error('Receiver is not part of this campaign');
+      }
+    } else {
+      // Influencer messaging brand
+      if (campaign.brandId !== receiverId) {
+        throw new Error('Receiver must be the brand for this campaign');
+      }
+    }
+
+    // Sanitize message text
+    const sanitizedText = xss(text.trim(), {
+      whiteList: {}, // Allow no HTML tags
+      stripIgnoredTag: true,
+    });
+
+    if (sanitizedText.length === 0) {
+      throw new Error('Message cannot be empty');
+    }
+
+    if (sanitizedText.length > 5000) {
+      throw new Error('Message too long (max 5000 characters)');
     }
 
     const message = await prisma.message.create({
@@ -24,7 +72,7 @@ export class MessageService {
         campaignId,
         senderId,
         receiverId,
-        text
+        text: sanitizedText
       }
     });
 
