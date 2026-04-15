@@ -66,7 +66,7 @@ const RecommendedInfluencers: React.FC = () => {
           onClick={() => navigate(`/brand/campaign/${campaignId}`)}
           className="text-blue-600 hover:text-blue-700 mb-4"
         >
-          ← Back to Campaign
+          Back to Campaign
         </button>
         <h1 className="text-3xl font-bold text-gray-900">Recommended Influencers</h1>
         <p className="text-gray-600 mt-2">
@@ -115,13 +115,13 @@ const RecommendedInfluencers: React.FC = () => {
                 <div className="text-center">
                   <p className="text-xs font-medium text-gray-600">Niche Match</p>
                   <p className="text-sm font-bold text-gray-900 mt-1">
-                    {rec.matchDetails.nicheMatch ? '✓' : '✗'}
+                    {rec.matchDetails.nicheMatch ? 'Yes' : 'No'}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-xs font-medium text-gray-600">Budget Match</p>
                   <p className="text-sm font-bold text-gray-900 mt-1">
-                    {rec.matchDetails.budgetMatch ? '✓' : '✗'}
+                    {rec.matchDetails.budgetMatch ? 'Yes' : 'No'}
                   </p>
                 </div>
                 <div className="text-center">
@@ -201,7 +201,7 @@ const RecommendedInfluencers: React.FC = () => {
                         rel="noopener noreferrer"
                         className="block text-sm text-blue-600 hover:text-blue-700 truncate"
                       >
-                        {item.description} →
+                        {item.description}
                       </a>
                     ))}
                     {rec.profile.portfolioItems.length > 3 && (

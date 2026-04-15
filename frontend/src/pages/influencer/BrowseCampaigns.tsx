@@ -89,9 +89,8 @@ const BrowseCampaigns: React.FC = () => {
               placeholder="Search campaigns..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="input-field bg-white dark:bg-ramp-gray-900 border-ramp-gray-300 dark:border-ramp-gray-800 text-ramp-black dark:text-white placeholder-ramp-gray-500 pl-10"
+              className="input-field bg-white dark:bg-ramp-gray-900 border-ramp-gray-300 dark:border-ramp-gray-800 text-ramp-black dark:text-white placeholder-ramp-gray-500"
             />
-            <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-ramp-gray-500">🔍</span>
           </div>
 
           {/* Filter Pills */}
@@ -156,7 +155,7 @@ const BrowseCampaigns: React.FC = () => {
           <>
             {filteredCampaigns.length === 0 ? (
               <div className="card border-2 border-dashed border-ramp-gray-300 dark:border-ramp-gray-700 text-center py-20">
-                <div className="text-4xl mb-3">🔍</div>
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">NONE</div>
                 <h3 className="text-lg font-semibold text-ramp-black dark:text-white mb-2">
                   No campaigns found
                 </h3>
@@ -194,19 +193,19 @@ const BrowseCampaigns: React.FC = () => {
                       {/* Details */}
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">📍</span>
+                          <span className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">Niche:</span>
                           <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{campaign.requiredNiche}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">💰</span>
+                          <span className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">Budget:</span>
                           <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{campaign.budgetTier}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">👥</span>
-                          <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{campaign.influencersNeeded} needed</span>
+                          <span className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">Needed:</span>
+                          <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{campaign.influencersNeeded}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">⏰</span>
+                          <span className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">Deadline:</span>
                           <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">
                             {new Date(campaign.deadline).toLocaleDateString()}
                           </span>
@@ -219,7 +218,7 @@ const BrowseCampaigns: React.FC = () => {
                       <span className="text-sm font-semibold text-ramp-purple-600 dark:text-ramp-purple-400">
                         View Details
                       </span>
-                      <span className="text-xl group-hover:translate-x-1 transition-transform">→</span>
+                      <span className="text-xs font-medium text-ramp-gray-500 dark:text-ramp-gray-400">Open</span>
                     </div>
                   </Link>
                 ))}

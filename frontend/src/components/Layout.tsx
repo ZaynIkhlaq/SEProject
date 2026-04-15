@@ -20,22 +20,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isActive = (path: string) => location.pathname.includes(path);
 
   const brandNavItems = [
-    { label: 'Dashboard', path: '/brand/dashboard', icon: '📊' },
-    { label: 'Campaigns', path: '/brand/dashboard', icon: '📢' },
-    { label: 'Recommendations', path: '/brand/dashboard', icon: '✨' },
-    { label: 'Messages', path: '/messages', icon: '💬' },
-    { label: 'Profile', path: '/brand/profile', icon: '👤' },
+    { label: 'Dashboard', path: '/brand/dashboard', icon: 'DB' },
+    { label: 'Campaigns', path: '/brand/dashboard', icon: 'CP' },
+    { label: 'Recommendations', path: '/brand/dashboard', icon: 'RC' },
+    { label: 'Messages', path: '/messages', icon: 'MS' },
+    { label: 'Profile', path: '/brand/profile', icon: 'PF' },
   ];
 
   const influencerNavItems = [
-    { label: 'Dashboard', path: '/influencer/dashboard', icon: '📊' },
-    { label: 'Campaigns', path: '/influencer/campaigns', icon: '📢' },
-    { label: 'Messages', path: '/messages', icon: '💬' },
-    { label: 'Profile', path: '/influencer/profile', icon: '👤' },
+    { label: 'Dashboard', path: '/influencer/dashboard', icon: 'DB' },
+    { label: 'Campaigns', path: '/influencer/campaigns', icon: 'CP' },
+    { label: 'Messages', path: '/messages', icon: 'MS' },
+    { label: 'Profile', path: '/influencer/profile', icon: 'PF' },
   ];
 
   const adminNavItems = [
-    { label: 'Dashboard', path: '/admin/dashboard', icon: '🔧' },
+    { label: 'Dashboard', path: '/admin/dashboard', icon: 'AD' },
   ];
 
   const getNavItems = () => {
@@ -72,7 +72,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     : 'text-ramp-gray-700 dark:text-ramp-gray-400 hover:bg-ramp-gray-100 dark:hover:bg-ramp-gray-800'
                 }`}
               >
-                <span className="mr-2">{item.icon}</span>
+                <span className="mr-2 inline-flex items-center justify-center w-6 h-6 rounded bg-ramp-gray-200 dark:bg-ramp-gray-700 text-[10px] font-semibold text-ramp-gray-700 dark:text-ramp-gray-200">
+                  {item.icon}
+                </span>
                 {item.label}
               </Link>
             ))}
@@ -98,7 +100,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="md:hidden p-2 hover:bg-ramp-gray-100 dark:hover:bg-ramp-gray-800 rounded-md transition-colors"
             >
-              <span className="text-xl">{isMobileMenuOpen ? '✕' : '☰'}</span>
+              <span className="text-xs font-semibold text-ramp-gray-700 dark:text-ramp-gray-300">
+                {isMobileMenuOpen ? 'Close' : 'Menu'}
+              </span>
             </button>
           </div>
         </div>
@@ -118,7 +122,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       : 'text-ramp-gray-700 dark:text-ramp-gray-400 hover:bg-ramp-gray-100 dark:hover:bg-ramp-gray-800'
                   }`}
                 >
-                  <span className="mr-2">{item.icon}</span>
+                  <span className="mr-2 inline-flex items-center justify-center w-6 h-6 rounded bg-ramp-gray-200 dark:bg-ramp-gray-700 text-[10px] font-semibold text-ramp-gray-700 dark:text-ramp-gray-200">
+                    {item.icon}
+                  </span>
                   {item.label}
                 </Link>
               ))}

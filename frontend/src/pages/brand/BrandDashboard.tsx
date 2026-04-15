@@ -83,7 +83,7 @@ const BrandDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 cursor-pointer group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-ramp-purple-100 dark:bg-ramp-purple-900 flex items-center justify-center group-hover:bg-ramp-purple-200 dark:group-hover:bg-ramp-purple-800 transition-colors">
-                <span className="text-2xl">📊</span>
+                <span className="text-xs font-semibold text-ramp-purple-700 dark:text-ramp-purple-300">TOT</span>
               </div>
               <span className="text-xs font-medium bg-ramp-purple-100 dark:bg-ramp-purple-900 text-ramp-purple-700 dark:text-ramp-purple-300 px-2 py-1 rounded">
                 Active
@@ -97,7 +97,7 @@ const BrandDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 cursor-pointer group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-ramp-teal-100 dark:bg-ramp-teal-900 flex items-center justify-center group-hover:bg-ramp-teal-200 dark:group-hover:bg-ramp-teal-800 transition-colors">
-                <span className="text-2xl">🚀</span>
+                <span className="text-xs font-semibold text-ramp-teal-700 dark:text-ramp-teal-300">ACT</span>
               </div>
               <span className="text-xs font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
                 Running
@@ -111,7 +111,7 @@ const BrandDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 cursor-pointer group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-ramp-blue-100 dark:bg-ramp-blue-900 flex items-center justify-center group-hover:bg-ramp-blue-200 dark:group-hover:bg-ramp-blue-800 transition-colors">
-                <span className="text-2xl">✅</span>
+                <span className="text-xs font-semibold text-ramp-blue-700 dark:text-ramp-blue-300">CMP</span>
               </div>
               <span className="text-xs font-medium bg-ramp-blue-100 dark:bg-ramp-blue-900 text-ramp-blue-600 dark:text-ramp-blue-300 px-2 py-1 rounded">
                 Complete
@@ -128,7 +128,6 @@ const BrandDashboard: React.FC = () => {
             to="/brand/campaign/create"
             className="btn-primary bg-ramp-purple-600 hover:bg-ramp-purple-700 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-ramp-lg transition-all"
           >
-            <span>✨</span>
             Create Campaign
           </Link>
           <Link
@@ -148,7 +147,7 @@ const BrandDashboard: React.FC = () => {
 
           {campaigns.length === 0 ? (
             <div className="card border-2 border-dashed border-ramp-gray-300 dark:border-ramp-gray-700 text-center py-16">
-              <div className="text-4xl mb-3">📢</div>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">CAM</div>
               <h3 className="text-lg font-semibold text-ramp-black dark:text-white mb-2">
                 No campaigns yet
               </h3>
@@ -190,14 +189,14 @@ const BrandDashboard: React.FC = () => {
                     </p>
                     <div className="flex items-center gap-4 text-sm">
                       <span className="text-ramp-gray-500 dark:text-ramp-gray-500">
-                        📍 {campaign.requiredNiche}
+                        Niche: {campaign.requiredNiche}
                       </span>
                       <span className="text-ramp-gray-500 dark:text-ramp-gray-500">
-                        👥 {campaign.influencersNeeded} needed
+                        Needed: {campaign.influencersNeeded}
                       </span>
                     </div>
                   </div>
-                  <div className="text-2xl group-hover:translate-x-1 transition-transform">→</div>
+                  <div className="text-xs font-medium text-ramp-purple-600 dark:text-ramp-purple-400">Details</div>
                 </Link>
               ))}
             </div>

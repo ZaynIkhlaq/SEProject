@@ -83,7 +83,7 @@ const InfluencerDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-ramp-purple-100 dark:bg-ramp-purple-900 flex items-center justify-center group-hover:bg-ramp-purple-200 dark:group-hover:bg-ramp-purple-800 transition-colors">
-                <span className="text-2xl">📋</span>
+                <span className="text-xs font-semibold text-ramp-purple-700 dark:text-ramp-purple-300">APP</span>
               </div>
               <span className="text-xs font-medium bg-ramp-purple-100 dark:bg-ramp-purple-900 text-ramp-purple-700 dark:text-ramp-purple-300 px-2 py-1 rounded">
                 Total
@@ -97,7 +97,7 @@ const InfluencerDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800 transition-colors">
-                <span className="text-2xl">⏳</span>
+                <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300">PND</span>
               </div>
               <span className="text-xs font-medium bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded">
                 Waiting
@@ -111,7 +111,7 @@ const InfluencerDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors">
-                <span className="text-2xl">✅</span>
+                <span className="text-xs font-semibold text-green-700 dark:text-green-300">ACC</span>
               </div>
               <span className="text-xs font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
                 Success
@@ -125,7 +125,7 @@ const InfluencerDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-ramp-red-100 dark:bg-ramp-red-900 flex items-center justify-center group-hover:bg-ramp-red-200 dark:group-hover:bg-ramp-red-800 transition-colors">
-                <span className="text-2xl">❌</span>
+                <span className="text-xs font-semibold text-ramp-red-700 dark:text-ramp-red-300">REJ</span>
               </div>
               <span className="text-xs font-medium bg-ramp-red-100 dark:bg-ramp-red-900 text-ramp-red-700 dark:text-ramp-red-300 px-2 py-1 rounded">
                 Declined
@@ -142,7 +142,6 @@ const InfluencerDashboard: React.FC = () => {
             to="/influencer/campaigns"
             className="btn-primary bg-ramp-purple-600 hover:bg-ramp-purple-700 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-ramp-lg transition-all"
           >
-            <span>🔍</span>
             Browse Campaigns
           </Link>
           <Link
@@ -162,7 +161,7 @@ const InfluencerDashboard: React.FC = () => {
 
           {applications.length === 0 ? (
             <div className="card border-2 border-dashed border-ramp-gray-300 dark:border-ramp-gray-700 text-center py-16">
-              <div className="text-4xl mb-3">🎯</div>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">APPS</div>
               <h3 className="text-lg font-semibold text-ramp-black dark:text-white mb-2">
                 No applications yet
               </h3>
@@ -205,7 +204,7 @@ const InfluencerDashboard: React.FC = () => {
                       Applied {new Date(app.createdAt).toLocaleDateString()}
                     </p>
                   </div>
-                  <div className="text-2xl group-hover:translate-x-1 transition-transform">→</div>
+                  <div className="text-xs font-medium text-ramp-gray-500 dark:text-ramp-gray-400">Details</div>
                 </div>
               ))}
             </div>

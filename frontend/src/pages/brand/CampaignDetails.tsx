@@ -136,7 +136,7 @@ const CampaignDetails: React.FC = () => {
           onClick={() => navigate('/brand/dashboard')}
           className="text-blue-600 hover:text-blue-700 mb-4"
         >
-          ← Back to Dashboard
+          Back to Dashboard
         </button>
         <h1 className="text-3xl font-bold text-gray-900">{campaign.title}</h1>
         <p className="text-gray-600 mt-2">Campaign ID: {campaign.id}</p>

@@ -142,7 +142,7 @@ const Messaging: React.FC = () => {
               <div className="flex-1 overflow-y-auto space-y-1 p-2">
                 {threads.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="text-3xl mb-3">💬</div>
+                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">MSG</div>
                     <p className="text-ramp-gray-500 dark:text-ramp-gray-500 text-sm">No conversations yet</p>
                   </div>
                 ) : (
@@ -185,7 +185,7 @@ const Messaging: React.FC = () => {
                   <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-ramp-gray-50 dark:from-ramp-gray-900 to-ramp-gray-100 dark:to-ramp-gray-800">
                     {messages.length === 0 ? (
                       <div className="text-center py-12">
-                        <div className="text-3xl mb-3">👋</div>
+                        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">NEW</div>
                         <p className="text-ramp-gray-500 dark:text-ramp-gray-500 text-sm">Start the conversation</p>
                       </div>
                     ) : (
@@ -231,7 +231,7 @@ const Messaging: React.FC = () => {
                         disabled={isSending || !newMessage.trim()}
                         className="btn-primary bg-ramp-purple-600 hover:bg-ramp-purple-700 text-white px-4 py-2.5 rounded-lg disabled:opacity-60 transition-all"
                       >
-                        {isSending ? '⏳' : '→'}
+                        {isSending ? 'Sending...' : 'Send'}
                       </button>
                     </form>
                   </div>
@@ -239,7 +239,7 @@ const Messaging: React.FC = () => {
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <div className="text-5xl mb-4">💬</div>
+                    <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-sm font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-4">CHAT</div>
                     <p className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">
                       Select a conversation to start messaging
                     </p>

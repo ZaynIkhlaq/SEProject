@@ -74,7 +74,7 @@ const CreateCampaign: React.FC = () => {
         {success && (
           <div className="bg-green-500 bg-opacity-10 border border-green-500 border-opacity-30 rounded-lg p-4 flex items-start gap-3 animate-slide-up">
             <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <span className="text-white text-xs">✓</span>
+              <span className="text-white text-xs">OK</span>
             </div>
             <p className="text-green-700 dark:text-green-300 text-sm font-medium">{success}</p>
           </div>
@@ -237,7 +237,6 @@ const CreateCampaign: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <span>✨</span>
                   <span>Create Campaign</span>
                 </>
               )}

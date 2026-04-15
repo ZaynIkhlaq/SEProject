@@ -17,13 +17,13 @@ const getToastStyles = (type: ToastType) => {
 const getToastIcon = (type: ToastType) => {
   switch (type) {
     case 'success':
-      return '✓';
+      return 'OK';
     case 'error':
-      return '✕';
+      return 'ERR';
     case 'warning':
-      return '⚠';
+      return '!';
     case 'info':
-      return 'ℹ';
+      return 'i';
   }
 };
 
@@ -48,7 +48,7 @@ const ToastItem: React.FC<{ toast: any; onRemove: (id: string) => void }> = ({
         onClick={() => onRemove(toast.id)}
         className="ml-2 opacity-70 hover:opacity-100 transition-opacity flex-shrink-0"
       >
-        ✕
+        Close
       </button>
     </div>
   );

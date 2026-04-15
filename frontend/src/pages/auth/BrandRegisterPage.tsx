@@ -105,11 +105,11 @@ const BrandRegisterPage: React.FC = () => {
             <div className="mt-2 p-3 bg-ramp-gray-900 rounded-lg border border-ramp-gray-800">
               <p className="text-xs text-ramp-gray-400 font-medium mb-2">Password must contain:</p>
               <ul className="text-xs text-ramp-gray-500 space-y-1">
-                <li>✓ At least 8 characters</li>
-                <li>✓ One uppercase letter (A-Z)</li>
-                <li>✓ One lowercase letter (a-z)</li>
-                <li>✓ One number (0-9)</li>
-                <li>✓ One special character (!@#$%^&*)</li>
+                <li>- At least 8 characters</li>
+                <li>- One uppercase letter (A-Z)</li>
+                <li>- One lowercase letter (a-z)</li>
+                <li>- One number (0-9)</li>
+                <li>- One special character (!@#$%^&*)</li>
               </ul>
             </div>
           </div>

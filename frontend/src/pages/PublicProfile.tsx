@@ -86,7 +86,7 @@ const PublicProfile: React.FC = () => {
           onClick={() => navigate(-1)}
           className="text-blue-600 hover:text-blue-700 mb-4"
         >
-          ← Go Back
+          Go Back
         </button>
       </div>
 
@@ -147,7 +147,7 @@ const PublicProfile: React.FC = () => {
                   <p className="text-gray-600 italic mt-2">"{profile.motto}"</p>
                 )}
                 {profile.location && (
-                  <p className="text-gray-600 mt-2">📍 {profile.location}</p>
+                  <p className="text-gray-600 mt-2">Location: {profile.location}</p>
                 )}
               </div>
             </div>
@@ -210,7 +210,7 @@ const PublicProfile: React.FC = () => {
                         rel="noopener noreferrer"
                         className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm whitespace-nowrap"
                       >
-                        View →
+                        View
                       </a>
                     </div>
                   </div>
