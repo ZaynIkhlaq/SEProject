@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -15,7 +15,7 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String   // bcrypt hashed
-  role      UserRole @default(USER)
+  role      String   @default("USER") // SQLite doesn't support enums
   
   // Profile relationships
   brandProfile      BrandProfile?
@@ -39,12 +39,6 @@ model User {
   @@index([createdAt])
 }
 
-enum UserRole {
-  BRAND
-  INFLUENCER
-  ADMIN
-  USER // fallback
-}
 
 // ===== PROFILES =====
 model BrandProfile {
@@ -56,7 +50,7 @@ model BrandProfile {
   industry          String
   bio               String?
   website           String?
-  budgetTier        BudgetTier
+  budgetTier        String // SQLite doesn't support enums
   targetInfluencerType String? // niche/category they seek
   
   createdAt DateTime @default(now())
@@ -98,7 +92,7 @@ model PortfolioItem {
   influencerProfile InfluencerProfile @relation(fields: [influencerProfileId], references: [id], onDelete: Cascade)
   
   url               String
-  description       String @db.VarChar(200)
+  description       String // SQLite: removed VarChar constraint
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -111,7 +105,7 @@ model AdminProfile {
   userId    String @unique
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   
-  permissions String[] @default(["manage_users", "view_reports"])
+  permissions String // SQLite: JSON string instead of array
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -119,11 +113,6 @@ model AdminProfile {
   @@index([userId])
 }
 
-enum BudgetTier {
-  TIER_10K_50K      // PKR 10k–50k
-  TIER_50K_200K     // PKR 50k–200k
-  TIER_200K_PLUS    // PKR 200k+
-}
 
 // ===== CAMPAIGNS =====
 model Campaign {
@@ -134,12 +123,12 @@ model Campaign {
   title             String
   productService    String // What's being promoted
   requiredNiche     String
-  budgetTier        BudgetTier
+  budgetTier        String // SQLite doesn't support enums
   influencersNeeded Int
   deadline          DateTime
   description       String
   
-  status            CampaignStatus @default(OPEN)
+  status            String @default("OPEN") // SQLite doesn't support enums
   
   // Relationships
   applications      CampaignApplication[]
@@ -156,12 +145,6 @@ model Campaign {
   @@index([createdAt])
 }
 
-enum CampaignStatus {
-  OPEN
-  IN_PROGRESS
-  COMPLETED
-  CLOSED
-}
 
 // ===== CAMPAIGN APPLICATIONS =====
 model CampaignApplication {
@@ -172,7 +155,7 @@ model CampaignApplication {
   influencerId      String
   influencer        User   @relation(fields: [influencerId], references: [id], onDelete: Cascade)
   
-  status            ApplicationStatus @default(PENDING)
+  status            String @default("PENDING") // SQLite doesn't support enums
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -183,11 +166,6 @@ model CampaignApplication {
   @@index([status])
 }
 
-enum ApplicationStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-}
 
 // ===== MESSAGING =====
 model Message {

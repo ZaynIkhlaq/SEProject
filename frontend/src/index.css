@@ -1,17 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* Ramp-inspired design system */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-white text-ramp-black transition-colors duration-300;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body.dark {
+    @apply bg-ramp-black text-white;
+  }
+
+  h1 {
+    @apply text-3xl font-bold tracking-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-bold;
+  }
+
+  h3 {
+    @apply text-xl font-semibold;
+  }
+
+  h4 {
+    @apply text-lg font-semibold;
+  }
+
+  p {
+    @apply text-ramp-gray-600 dark:text-ramp-gray-300 leading-relaxed;
+  }
+
+  code {
+    font-family: 'Fira Code', monospace;
+  }
+
+  /* Smooth transitions */
+  * {
+    @apply transition-colors duration-200;
+  }
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@layer components {
+  /* Primary button */
+  .btn-primary {
+    @apply px-4 py-2.5 bg-ramp-purple-600 text-white font-semibold rounded-md
+           hover:bg-ramp-purple-700 active:bg-ramp-purple-800 
+           disabled:opacity-50 disabled:cursor-not-allowed
+           transition-all duration-200 shadow-ramp-sm
+           focus:outline-none focus:ring-2 focus:ring-ramp-purple-500 focus:ring-offset-2;
+  }
+
+  /* Secondary button */
+  .btn-secondary {
+    @apply px-4 py-2.5 bg-ramp-gray-100 text-ramp-black dark:bg-ramp-gray-800 dark:text-white
+           font-semibold rounded-md hover:bg-ramp-gray-200 dark:hover:bg-ramp-gray-700
+           active:bg-ramp-gray-300 disabled:opacity-50 disabled:cursor-not-allowed
+           transition-all duration-200 border border-ramp-gray-200 dark:border-ramp-gray-700
+           focus:outline-none focus:ring-2 focus:ring-ramp-purple-500 focus:ring-offset-2;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full px-3 py-2.5 rounded-md bg-white dark:bg-ramp-gray-900
+           border border-ramp-gray-300 dark:border-ramp-gray-700
+           text-ramp-black dark:text-white placeholder-ramp-gray-500
+           focus:outline-none focus:ring-2 focus:ring-ramp-purple-500
+           focus:border-transparent transition-all duration-200;
+  }
+
+  /* Card component */
+  .card {
+    @apply bg-white dark:bg-ramp-gray-900 rounded-lg border border-ramp-gray-200
+           dark:border-ramp-gray-800 shadow-ramp-sm p-6 transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-ramp-md hover:border-ramp-gray-300 dark:hover:border-ramp-gray-700;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-sm font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-ramp-purple-100 dark:bg-ramp-purple-900 text-ramp-purple-700 dark:text-ramp-purple-300;
+  }
+
+  .badge-success {
+    @apply badge bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300;
+  }
+
+  .badge-danger {
+    @apply badge bg-ramp-red-100 dark:bg-ramp-red-900 text-ramp-red-600 dark:text-ramp-red-300;
+  }
+
+  /* Navigation */
+  .nav-link {
+    @apply text-ramp-gray-600 dark:text-ramp-gray-400 hover:text-ramp-purple-600
+           dark:hover:text-ramp-purple-400 font-medium transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-ramp-purple-600 dark:text-ramp-purple-400 font-bold;
+  }
+
+  /* Grid layout */
+  .grid-responsive {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  /* Loading state */
+  .loading-spinner {
+    @apply animate-spin inline-block w-5 h-5 border-2 border-transparent
+           border-t-ramp-purple-600 rounded-full;
+  }
 }

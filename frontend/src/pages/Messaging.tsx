@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import Layout from '../components/Layout';
 
 interface MessageThread {
   campaignId: string;
@@ -22,17 +23,19 @@ const Messaging: React.FC = () => {
   const { api, user } = useAuth();
   const [threads, setThreads] = useState<MessageThread[]>([]);
   const [selectedThread, setSelectedThread] = useState<string | null>(null);
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Fetch inbox on mount and poll for updates
   useEffect(() => {
     const fetchInbox = async () => {
       try {
-        const response = await api.get('/messages/inbox');
+        const response = await api.get('/api/v1/messages/inbox');
         setThreads(response.data.data);
         setIsLoading(false);
       } catch (err) {
@@ -42,8 +45,6 @@ const Messaging: React.FC = () => {
     };
 
     fetchInbox();
-
-    // Poll every 10 seconds
     const interval = setInterval(fetchInbox, 10000);
     return () => clearInterval(interval);
   }, [api]);
@@ -52,7 +53,7 @@ const Messaging: React.FC = () => {
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {
-        const response = await api.get('/messages/unread/count');
+        const response = await api.get('/api/v1/messages/unread/count');
         setUnreadCount(response.data.data.unreadCount);
       } catch (err) {
         console.error('Failed to get unread count');
@@ -66,8 +67,9 @@ const Messaging: React.FC = () => {
 
   const handleSelectThread = async (campaignId: string, otherUserId: string) => {
     setSelectedThread(campaignId);
+    setSelectedUserId(otherUserId);
     try {
-      const response = await api.get(`/messages/thread/${campaignId}/${otherUserId}`);
+      const response = await api.get(`/api/v1/messages/thread/${campaignId}/${otherUserId}`);
       setMessages(response.data.data);
     } catch (err) {
       console.error('Failed to load thread');
@@ -76,21 +78,18 @@ const Messaging: React.FC = () => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedThread || !newMessage.trim()) return;
-
-    const thread = threads.find(t => t.campaignId === selectedThread);
-    if (!thread) return;
+    if (!selectedThread || !selectedUserId || !newMessage.trim()) return;
 
     setIsSending(true);
     try {
-      await api.post('/messages', {
+      await api.post('/api/v1/messages', {
         campaignId: selectedThread,
-        receiverId: thread.otherPartyId,
+        receiverId: selectedUserId,
         text: newMessage
       });
       setNewMessage('');
       // Refresh messages
-      const response = await api.get(`/messages/thread/${selectedThread}/${thread.otherPartyId}`);
+      const response = await api.get(`/api/v1/messages/thread/${selectedThread}/${selectedUserId}`);
       setMessages(response.data.data);
     } catch (err) {
       console.error('Failed to send message');
@@ -99,106 +98,159 @@ const Messaging: React.FC = () => {
     }
   };
 
-  if (isLoading) {
-    return <div className="p-8 text-center">Loading messages...</div>;
-  }
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      {/* Threads List */}
-      <div className="w-full md:w-1/3 bg-white shadow overflow-y-auto">
-        <div className="p-4 border-b">
-          <h1 className="text-2xl font-bold">Messages</h1>
-          {unreadCount > 0 && (
-            <p className="text-blue-600 font-semibold">{unreadCount} unread</p>
-          )}
+    <Layout>
+      <div className="space-y-6 animate-fade-in">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-ramp-black dark:text-white mb-2">Messages</h1>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400">
+              {unreadCount > 0 && (
+                <span className="inline-flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-ramp-red-500"></span>
+                  {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}
+                </span>
+              )}
+              {unreadCount === 0 && 'All caught up!'}
+            </p>
+          </div>
         </div>
 
-        {threads.length === 0 ? (
-          <div className="p-4 text-gray-500 text-center">No messages yet</div>
+        {isLoading ? (
+          <div className="flex items-center justify-center h-96">
+            <div className="text-center">
+              <div className="inline-block loading-spinner mb-4"></div>
+              <p className="text-ramp-gray-600 dark:text-ramp-gray-400">Loading messages...</p>
+            </div>
+          </div>
         ) : (
-          <div>
-            {threads.map(thread => (
-              <button
-                key={thread.campaignId}
-                onClick={() => handleSelectThread(thread.campaignId, thread.otherPartyId)}
-                className={`w-full p-4 border-b text-left hover:bg-gray-50 ${
-                  selectedThread === thread.campaignId ? 'bg-blue-50' : ''
-                }`}
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-semibold">{thread.otherPartyName}</p>
-                    <p className="text-sm text-gray-600 truncate">
-                      {thread.lastMessage?.text || 'No messages'}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[600px]">
+            {/* Threads List */}
+            <div className="card flex flex-col overflow-hidden bg-white dark:bg-ramp-gray-900 border border-ramp-gray-200 dark:border-ramp-gray-800">
+              <div className="p-4 border-b border-ramp-gray-200 dark:border-ramp-gray-800">
+                <h2 className="font-semibold text-ramp-black dark:text-white">Conversations</h2>
+                <p className="text-xs text-ramp-gray-500 dark:text-ramp-gray-500 mt-1">
+                  {threads.length} thread{threads.length !== 1 ? 's' : ''}
+                </p>
+              </div>
+
+              <div className="flex-1 overflow-y-auto space-y-1 p-2">
+                {threads.length === 0 ? (
+                  <div className="text-center py-12">
+                    <div className="text-3xl mb-3">💬</div>
+                    <p className="text-ramp-gray-500 dark:text-ramp-gray-500 text-sm">No conversations yet</p>
+                  </div>
+                ) : (
+                  threads.map((thread) => (
+                    <button
+                      key={`${thread.campaignId}-${thread.otherPartyId}`}
+                      onClick={() => handleSelectThread(thread.campaignId, thread.otherPartyId)}
+                      className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
+                        selectedThread === thread.campaignId
+                          ? 'bg-ramp-purple-100 dark:bg-ramp-purple-900'
+                          : 'hover:bg-ramp-gray-100 dark:hover:bg-ramp-gray-800'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p className="font-medium text-sm text-ramp-black dark:text-white truncate">
+                          {thread.otherPartyName}
+                        </p>
+                        {thread.unreadCount > 0 && (
+                          <span className="w-5 h-5 rounded-full bg-ramp-purple-600 text-white text-xs flex items-center justify-center font-bold">
+                            {thread.unreadCount}
+                          </span>
+                        )}
+                      </div>
+                      {thread.lastMessage && (
+                        <p className="text-xs text-ramp-gray-600 dark:text-ramp-gray-400 truncate">
+                          {thread.lastMessage.text}
+                        </p>
+                      )}
+                    </button>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Chat Area */}
+            <div className="lg:col-span-2 card flex flex-col overflow-hidden bg-white dark:bg-ramp-gray-900 border border-ramp-gray-200 dark:border-ramp-gray-800">
+              {selectedThread ? (
+                <>
+                  {/* Messages */}
+                  <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-ramp-gray-50 dark:from-ramp-gray-900 to-ramp-gray-100 dark:to-ramp-gray-800">
+                    {messages.length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="text-3xl mb-3">👋</div>
+                        <p className="text-ramp-gray-500 dark:text-ramp-gray-500 text-sm">Start the conversation</p>
+                      </div>
+                    ) : (
+                      messages.map((message) => (
+                        <div
+                          key={message.id}
+                          className={`flex ${message.senderId === user?.id ? 'justify-end' : 'justify-start'} animate-slide-up`}
+                        >
+                          <div
+                            className={`max-w-xs lg:max-w-md px-4 py-2.5 rounded-lg ${
+                              message.senderId === user?.id
+                                ? 'bg-ramp-purple-600 text-white rounded-br-none'
+                                : 'bg-white dark:bg-ramp-gray-800 text-ramp-black dark:text-white border border-ramp-gray-200 dark:border-ramp-gray-700 rounded-bl-none'
+                            }`}
+                          >
+                            <p className="text-sm">{message.text}</p>
+                            <p className={`text-xs mt-1 ${
+                              message.senderId === user?.id
+                                ? 'text-ramp-purple-200'
+                                : 'text-ramp-gray-500 dark:text-ramp-gray-400'
+                            }`}>
+                              {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                    <div ref={messagesEndRef} />
+                  </div>
+
+                  {/* Send Form */}
+                  <div className="border-t border-ramp-gray-200 dark:border-ramp-gray-800 p-4 bg-white dark:bg-ramp-gray-900">
+                    <form onSubmit={handleSendMessage} className="flex gap-3">
+                      <input
+                        type="text"
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        placeholder="Type a message..."
+                        className="input-field flex-1 bg-ramp-gray-100 dark:bg-ramp-gray-800 border-ramp-gray-300 dark:border-ramp-gray-700 text-ramp-black dark:text-white placeholder-ramp-gray-500"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSending || !newMessage.trim()}
+                        className="btn-primary bg-ramp-purple-600 hover:bg-ramp-purple-700 text-white px-4 py-2.5 rounded-lg disabled:opacity-60 transition-all"
+                      >
+                        {isSending ? '⏳' : '→'}
+                      </button>
+                    </form>
+                  </div>
+                </>
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <div className="text-center">
+                    <div className="text-5xl mb-4">💬</div>
+                    <p className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">
+                      Select a conversation to start messaging
                     </p>
                   </div>
-                  {thread.unreadCount > 0 && (
-                    <span className="bg-blue-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center">
-                      {thread.unreadCount}
-                    </span>
-                  )}
                 </div>
-              </button>
-            ))}
+              )}
+            </div>
           </div>
         )}
       </div>
-
-      {/* Messages View */}
-      <div className="hidden md:flex flex-1 flex-col bg-white">
-        {selectedThread ? (
-          <>
-            {/* Messages List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {messages.map(msg => (
-                <div
-                  key={msg.id}
-                  className={`flex ${msg.senderId === user?.id ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-xs px-4 py-2 rounded-lg ${
-                      msg.senderId === user?.id
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-200 text-gray-900'
-                    }`}
-                  >
-                    <p>{msg.text}</p>
-                    <p className="text-xs opacity-75 mt-1">
-                      {new Date(msg.createdAt).toLocaleTimeString()}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Send Message */}
-            <div className="border-t p-4">
-              <form onSubmit={handleSendMessage} className="flex gap-2">
-                <input
-                  type="text"
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  type="submit"
-                  disabled={isSending || !newMessage.trim()}
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
-                >
-                  Send
-                </button>
-              </form>
-            </div>
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select a conversation to view messages
-          </div>
-        )}
-      </div>
-    </div>
+    </Layout>
   );
 };
 

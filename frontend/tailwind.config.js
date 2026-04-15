@@ -4,8 +4,101 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Sohne', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['Sohne', 'Inter', 'sans-serif'],
+        mono: ['Fira Code', 'monospace'],
+      },
+      colors: {
+        // Ramp-inspired palette
+        'ramp-black': '#0a0a0a',
+        'ramp-dark': '#1a1a1a',
+        'ramp-gray': {
+          50: '#f9f9f9',
+          100: '#f3f3f3',
+          200: '#e8e8e8',
+          300: '#d9d9d9',
+          400: '#b3b3b3',
+          500: '#808080',
+          600: '#666666',
+          700: '#333333',
+          800: '#1f1f1f',
+          900: '#0f0f0f',
+        },
+        'ramp-purple': {
+          50: '#f5f0ff',
+          400: '#9d5af0',
+          500: '#8b5cf6',
+          600: '#7c3aed',
+          700: '#6d28d9',
+        },
+        'ramp-blue': {
+          400: '#3b82f6',
+          500: '#2563eb',
+          600: '#1d4ed8',
+        },
+        'ramp-teal': {
+          400: '#14b8a6',
+          500: '#06b6d4',
+          600: '#0891b2',
+        },
+        'ramp-red': {
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+        },
+      },
+      spacing: {
+        'xs': '4px',
+        'sm': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'xl': '24px',
+        '2xl': '32px',
+        '3xl': '48px',
+        '4xl': '64px',
+      },
+      borderRadius: {
+        'xs': '4px',
+        'sm': '6px',
+        'md': '8px',
+        'lg': '12px',
+        'xl': '16px',
+      },
+      boxShadow: {
+        'ramp-sm': '0 1px 2px rgba(0, 0, 0, 0.08)',
+        'ramp-md': '0 2px 8px rgba(0, 0, 0, 0.12)',
+        'ramp-lg': '0 8px 24px rgba(0, 0, 0, 0.16)',
+        'ramp-xl': '0 16px 48px rgba(0, 0, 0, 0.20)',
+      },
+      animation: {
+        'fade-in': 'fadeIn 0.3s ease-in-out',
+        'slide-up': 'slideUp 0.4s ease-out',
+        'slide-in-left': 'slideInLeft 0.3s ease-out',
+        'pulse-subtle': 'pulseSubtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        slideUp: {
+          '0%': { opacity: '0', transform: 'translateY(12px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        slideInLeft: {
+          '0%': { opacity: '0', transform: 'translateX(-12px)' },
+          '100%': { opacity: '1', transform: 'translateX(0)' },
+        },
+        pulseSubtle: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.8' },
+        },
+      },
+    },
   },
   plugins: [],
 }

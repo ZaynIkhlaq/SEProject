@@ -32,66 +32,121 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center p-4">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-md">
-        <h1 className="text-3xl font-bold text-gray-800 mb-2">InfluencerHub</h1>
-        <p className="text-gray-600 mb-6">Brand & Influencer Collaboration Platform</p>
+    <div className="min-h-screen bg-ramp-black flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Gradient background effect */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-80 h-80 bg-ramp-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-subtle"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-ramp-teal-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-subtle" style={{ animationDelay: '1s' }}></div>
+      </div>
 
+      <div className="relative z-10 w-full max-w-md">
+        {/* Logo/Header */}
+        <div className="text-center mb-12 animate-fade-in">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-ramp-purple-600 to-ramp-blue-500 mb-6">
+            <span className="text-white font-bold text-xl">IH</span>
+          </div>
+          <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">InfluencerHub</h1>
+          <p className="text-ramp-gray-400 text-sm">Connect brands with influencers. Collaborate at scale.</p>
+        </div>
+
+        {/* Error Alert */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
+          <div className="mb-6 animate-slide-up">
+            <div className="bg-ramp-red-500 bg-opacity-10 border border-ramp-red-500 border-opacity-30 rounded-lg p-3 flex items-start gap-3">
+              <div className="w-5 h-5 rounded-full bg-ramp-red-500 flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-white text-xs">!</span>
+              </div>
+              <p className="text-ramp-red-300 text-sm font-medium">{error}</p>
+            </div>
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Login Form */}
+        <form onSubmit={handleSubmit} className="space-y-5 mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          {/* Email Input */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Email</label>
+            <label className="block text-white font-medium text-sm mb-2.5">Email Address</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="your@email.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="you@company.com"
+              className="input-field bg-ramp-gray-900 border-ramp-gray-800 text-white placeholder-ramp-gray-600"
               required
             />
           </div>
 
+          {/* Password Input */}
           <div>
-            <label className="block text-gray-700 font-medium mb-2">Password</label>
+            <label className="block text-white font-medium text-sm mb-2.5">Password</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter your password"
+              className="input-field bg-ramp-gray-900 border-ramp-gray-800 text-white placeholder-ramp-gray-600"
               required
             />
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition"
+            className="btn-primary w-full bg-ramp-purple-600 hover:bg-ramp-purple-700 font-medium py-3 text-white rounded-lg
+                       disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-ramp-lg
+                       transition-all duration-200 flex items-center justify-center gap-2"
           >
-            {isLoading ? 'Logging in...' : 'Login'}
+            {isLoading ? (
+              <>
+                <div className="loading-spinner"></div>
+                <span>Signing in...</span>
+              </>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
 
-        <div className="mt-6 border-t pt-6">
-          <p className="text-gray-600 text-center mb-4">Don't have an account?</p>
-          <div className="space-y-2">
-            <Link
-              to="/register/brand"
-              className="block w-full bg-green-600 text-white font-bold py-2 rounded-lg hover:bg-green-700 text-center transition"
-            >
-              Register as Brand
-            </Link>
-            <Link
-              to="/register/influencer"
-              className="block w-full bg-purple-600 text-white font-bold py-2 rounded-lg hover:bg-purple-700 text-center transition"
-            >
-              Register as Influencer
-            </Link>
+        {/* Divider */}
+        <div className="relative mb-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-ramp-gray-800"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-3 bg-ramp-black text-ramp-gray-500 font-medium">New to InfluencerHub?</span>
+          </div>
+        </div>
+
+        {/* Registration Links */}
+        <div className="grid grid-cols-2 gap-3 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <Link
+            to="/register/brand"
+            className="btn-secondary bg-ramp-gray-900 border-ramp-gray-800 text-white hover:bg-ramp-gray-800 
+                       py-2.5 rounded-lg font-medium text-center transition-all duration-200"
+          >
+            Join as Brand
+          </Link>
+          <Link
+            to="/register/influencer"
+            className="btn-secondary bg-ramp-gray-900 border-ramp-gray-800 text-white hover:bg-ramp-gray-800 
+                       py-2.5 rounded-lg font-medium text-center transition-all duration-200"
+          >
+            Join as Creator
+          </Link>
+        </div>
+
+        {/* Demo Credentials - Development Only */}
+        <div className="mt-8 p-4 bg-ramp-gray-900 rounded-lg border border-ramp-gray-800 text-center">
+          <p className="text-ramp-gray-500 text-xs font-medium mb-2">Demo Credentials</p>
+          <div className="space-y-1.5 text-xs">
+            <p className="text-ramp-gray-400">
+              <span className="text-ramp-purple-400 font-medium">Brand:</span> brand@demo.com
+            </p>
+            <p className="text-ramp-gray-400">
+              <span className="text-ramp-teal-400 font-medium">Creator:</span> influencer@demo.com
+            </p>
+            <p className="text-ramp-gray-500">Password: <span className="font-mono">password123</span></p>
           </div>
         </div>
       </div>
