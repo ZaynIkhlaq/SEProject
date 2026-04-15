@@ -120,15 +120,33 @@ async function main() {
 
   console.log('✅ Created messages');
 
-  // Create review
-  await prisma.campaign.update({
-    where: { id: campaign.id },
-    data: { status: 'COMPLETED' }
+  // Create a separate completed campaign for review testing
+  const completedCampaign = await prisma.campaign.create({
+    data: {
+      brandId: brand.id,
+      title: 'Past Campaign - Review Demo',
+      productService: 'Previous Product',
+      requiredNiche: 'Tech & Innovation',
+      budgetTier: 'TIER_10K_50K',
+      influencersNeeded: 3,
+      deadline: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
+      description: 'A completed campaign for demonstration purposes',
+      status: 'COMPLETED'
+    }
+  });
+
+  // Create another application and review on the completed campaign
+  const completedApplication = await prisma.campaignApplication.create({
+    data: {
+      campaignId: completedCampaign.id,
+      influencerId: influencer.id,
+      status: 'ACCEPTED'
+    }
   });
 
   const review = await prisma.review.create({
     data: {
-      campaignId: campaign.id,
+      campaignId: completedCampaign.id,
       reviewerId: brand.id,
       reviewedUserId: influencer.id,
       rating: 5,
@@ -136,7 +154,7 @@ async function main() {
     }
   });
 
-  console.log('✅ Created review');
+  console.log('✅ Created review on completed campaign');
 
   console.log('✨ Database seeding complete!');
 }
