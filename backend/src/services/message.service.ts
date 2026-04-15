@@ -56,7 +56,7 @@ export class MessageService {
     // Sanitize message text
     const sanitizedText = xss(text.trim(), {
       whiteList: {}, // Allow no HTML tags
-      stripIgnoredTag: true,
+      stripIgnoreTag: true,
     });
 
     if (sanitizedText.length === 0) {

@@ -4,8 +4,8 @@ import { prisma } from '../index';
 import { RegisterBrandRequest, RegisterInfluencerRequest, AuthResponse, User } from '../shared/types';
 
 // Validate JWT secrets at startup
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;
+const JWT_SECRET: string = process.env.JWT_SECRET || '';
+const JWT_REFRESH_SECRET: string = process.env.JWT_REFRESH_SECRET || '';
 
 if (!JWT_SECRET || !JWT_REFRESH_SECRET) {
   throw new Error('FATAL: JWT_SECRET and JWT_REFRESH_SECRET must be set in environment variables');

@@ -1,6 +1,22 @@
 import { prisma } from '../index';
 import { BrandProfile, BrandProfileUpdate, InfluencerProfile, InfluencerProfileUpdate, PortfolioItem, PortfolioItemCreate } from '../shared/types';
 
+// Helper to convert null to undefined for compatibility
+const normalizeBrandProfile = (profile: any): BrandProfile => ({
+  ...profile,
+  bio: profile.bio ?? undefined,
+  website: profile.website ?? undefined,
+  targetInfluencerType: profile.targetInfluencerType ?? undefined,
+});
+
+const normalizeInfluencerProfile = (profile: any): InfluencerProfile => ({
+  ...profile,
+  motto: profile.motto ?? undefined,
+  bio: profile.bio ?? undefined,
+  location: profile.location ?? undefined,
+  profilePhoto: profile.profilePhoto ?? undefined,
+});
+
 export class ProfileService {
   // ===== BRAND PROFILES =====
   static async getBrandProfile(userId: string): Promise<BrandProfile> {
@@ -12,7 +28,7 @@ export class ProfileService {
       throw new Error('Brand profile not found');
     }
 
-    return profile;
+    return normalizeBrandProfile(profile);
   }
 
   static async updateBrandProfile(userId: string, data: BrandProfileUpdate): Promise<BrandProfile> {
@@ -21,7 +37,7 @@ export class ProfileService {
       data
     });
 
-    return profile;
+    return normalizeBrandProfile(profile);
   }
 
   // ===== INFLUENCER PROFILES =====
@@ -37,7 +53,7 @@ export class ProfileService {
       throw new Error('Influencer profile not found');
     }
 
-    return profile;
+    return normalizeInfluencerProfile(profile);
   }
 
   static async updateInfluencerProfile(userId: string, data: InfluencerProfileUpdate): Promise<InfluencerProfile> {
@@ -49,7 +65,7 @@ export class ProfileService {
       }
     });
 
-    return profile;
+    return normalizeInfluencerProfile(profile);
   }
 
   // ===== PORTFOLIO ITEMS (US-2.3) =====

@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './context/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import { ToastContainer } from './components/ToastContainer';
 
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
@@ -30,8 +32,10 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <Routes>
+      <ToastProvider>
+        <AuthProvider>
+          <ToastContainer />
+          <Routes>
           {/* Public Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register/brand" element={<BrandRegisterPage />} />
@@ -93,7 +97,8 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </AuthProvider>
+        </AuthProvider>
+      </ToastProvider>
     </Router>
   );
 }
