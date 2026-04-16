@@ -69,27 +69,100 @@ async function main() {
 
   console.log('✅ Created influencer:', influencer.email);
 
-  // Create demo campaign
-  const campaign = await prisma.campaign.create({
-    data: {
-      brandId: brand.id,
-      title: 'Product Launch Campaign',
-      productService: 'New Smartphone',
-      requiredNiche: 'Tech & Innovation',
-      budgetTier: 'TIER_50K_200K',
-      influencersNeeded: 5,
-      deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-      description: 'We are looking for tech influencers to promote our latest smartphone launch',
-      status: 'OPEN'
-    }
-  });
+  // Create multiple demo campaigns with different niches and products
+  const campaigns = await Promise.all([
+    // Campaign 1: Tech & Innovation
+    prisma.campaign.create({
+      data: {
+        brandId: brand.id,
+        title: 'Product Launch Campaign',
+        productService: 'New Smartphone',
+        requiredNiche: 'Tech & Innovation',
+        budgetTier: 'TIER_50K_200K',
+        influencersNeeded: 5,
+        deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        description: 'We are looking for tech influencers to promote our latest smartphone launch with high-quality content',
+        status: 'OPEN'
+      }
+    }),
+    // Campaign 2: Fashion & Lifestyle
+    prisma.campaign.create({
+      data: {
+        brandId: brand.id,
+        title: 'Summer Fashion Collection',
+        productService: 'Fashion & Apparel',
+        requiredNiche: 'Fashion & Lifestyle',
+        budgetTier: 'TIER_10K_50K',
+        influencersNeeded: 8,
+        deadline: new Date(Date.now() + 45 * 24 * 60 * 60 * 1000),
+        description: 'Launch our new summer clothing line with fashion influencers and style content creators',
+        status: 'OPEN'
+      }
+    }),
+    // Campaign 3: Beauty & Wellness
+    prisma.campaign.create({
+      data: {
+        brandId: brand.id,
+        title: 'Natural Skincare Range',
+        productService: 'Organic Beauty Products',
+        requiredNiche: 'Beauty & Wellness',
+        budgetTier: 'TIER_50K_200K',
+        influencersNeeded: 6,
+        deadline: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+        description: 'Promote our new natural skincare line through beauty and wellness influencers',
+        status: 'OPEN'
+      }
+    }),
+    // Campaign 4: Fitness & Health
+    prisma.campaign.create({
+      data: {
+        brandId: brand.id,
+        title: 'Fitness Equipment Brand',
+        productService: 'Home Gym Equipment',
+        requiredNiche: 'Fitness & Health',
+        budgetTier: 'TIER_10K_50K',
+        influencersNeeded: 4,
+        deadline: new Date(Date.now() + 35 * 24 * 60 * 60 * 1000),
+        description: 'Partner with fitness influencers to showcase our innovative home gym equipment',
+        status: 'OPEN'
+      }
+    }),
+    // Campaign 5: Food & Beverage
+    prisma.campaign.create({
+      data: {
+        brandId: brand.id,
+        title: 'Healthy Beverage Launch',
+        productService: 'Energy Drinks',
+        requiredNiche: 'Food & Beverage',
+        budgetTier: 'TIER_50K_200K',
+        influencersNeeded: 7,
+        deadline: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+        description: 'Launch our new line of organic energy drinks with food and lifestyle content creators',
+        status: 'OPEN'
+      }
+    }),
+    // Campaign 6: Gaming & Entertainment (completed campaign)
+    prisma.campaign.create({
+      data: {
+        brandId: brand.id,
+        title: 'Gaming Console Sponsorship',
+        productService: 'Gaming Hardware',
+        requiredNiche: 'Gaming & Entertainment',
+        budgetTier: 'TIER_200K_PLUS',
+        influencersNeeded: 10,
+        deadline: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000),
+        description: 'A completed campaign sponsoring gaming influencers for console launch',
+        status: 'COMPLETED'
+      }
+    })
+  ]);
 
-  console.log('✅ Created campaign:', campaign.title);
+  console.log(`✅ Created ${campaigns.length} campaigns`);
 
-  // Create application
+  // Create application for the first campaign
   const application = await prisma.campaignApplication.create({
     data: {
-      campaignId: campaign.id,
+      campaignId: campaigns[0].id,
       influencerId: influencer.id,
       status: 'ACCEPTED'
     }
@@ -100,7 +173,7 @@ async function main() {
   // Create messages
   const message1 = await prisma.message.create({
     data: {
-      campaignId: campaign.id,
+      campaignId: campaigns[0].id,
       senderId: brand.id,
       receiverId: influencer.id,
       text: 'Hi! We love your content. Would you be interested in promoting our new phone?',
@@ -110,7 +183,7 @@ async function main() {
 
   const message2 = await prisma.message.create({
     data: {
-      campaignId: campaign.id,
+      campaignId: campaigns[0].id,
       senderId: influencer.id,
       receiverId: brand.id,
       text: 'Thanks for reaching out! I\'m definitely interested. What\'s the timeline and deliverables?',
@@ -120,25 +193,10 @@ async function main() {
 
   console.log('✅ Created messages');
 
-  // Create a separate completed campaign for review testing
-  const completedCampaign = await prisma.campaign.create({
-    data: {
-      brandId: brand.id,
-      title: 'Past Campaign - Review Demo',
-      productService: 'Previous Product',
-      requiredNiche: 'Tech & Innovation',
-      budgetTier: 'TIER_10K_50K',
-      influencersNeeded: 3,
-      deadline: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000), // 10 days ago
-      description: 'A completed campaign for demonstration purposes',
-      status: 'COMPLETED'
-    }
-  });
-
-  // Create another application and review on the completed campaign
+  // Create application and review on the completed campaign
   const completedApplication = await prisma.campaignApplication.create({
     data: {
-      campaignId: completedCampaign.id,
+      campaignId: campaigns[5].id,
       influencerId: influencer.id,
       status: 'ACCEPTED'
     }
@@ -146,7 +204,7 @@ async function main() {
 
   const review = await prisma.review.create({
     data: {
-      campaignId: completedCampaign.id,
+      campaignId: campaigns[5].id,
       reviewerId: brand.id,
       reviewedUserId: influencer.id,
       rating: 5,
