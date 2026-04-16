@@ -14,7 +14,7 @@ export interface AuthContextType {
   accessToken: string | null;
   refreshToken: string | null;
   isLoading: boolean;
-  login: (email: string, password: string, role: 'brand' | 'influencer') => Promise<void>;
+  login: (email: string, password: string, role: 'brand' | 'influencer') => Promise<User>;
   registerBrand: (email: string, password: string, companyName: string, industry: string, budgetTier: string) => Promise<void>;
   registerInfluencer: (email: string, password: string, niche: string, platform: string, followerCount: number, engagementRate: number) => Promise<void>;
   logout: () => void;
@@ -145,11 +145,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsLoading(true);
     try {
       const response = await api.post('/auth/login', { email, password });
-      setUser(response.data.data.user);
+      const loggedInUser = response.data.data.user as User;
+
+      setUser(loggedInUser);
       setAccessToken(response.data.data.accessToken);
       setRefreshToken(response.data.data.refreshToken);
       localStorage.setItem('accessToken', response.data.data.accessToken);
       localStorage.setItem('refreshToken', response.data.data.refreshToken);
+      return loggedInUser;
     } finally {
       setIsLoading(false);
     }

@@ -10,22 +10,44 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
+  const normalizeLoginIdentifier = (value: string): string => {
+    const normalized = value.trim().toLowerCase();
+
+    if (normalized.includes('@')) {
+      return normalized;
+    }
+
+    if (normalized === 'brand') {
+      return 'brand@demo.com';
+    }
+
+    if (normalized === 'influencer' || normalized === 'creator') {
+      return 'influencer@demo.com';
+    }
+
+    return normalized;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      await login(email, password, 'brand');
-      navigate('/brand/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed');
-      try {
-        await login(email, password, 'influencer');
+      const normalizedEmail = normalizeLoginIdentifier(email);
+      const loggedInUser = await login(normalizedEmail, password, 'brand');
+
+      if (loggedInUser.role === 'INFLUENCER') {
         navigate('/influencer/dashboard');
-      } catch {
-        setError('Invalid email or password');
+      } else if (loggedInUser.role === 'BRAND') {
+        navigate('/brand/dashboard');
+      } else if (loggedInUser.role === 'ADMIN') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/messages');
       }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Invalid email/username or password');
     } finally {
       setIsLoading(false);
     }
@@ -65,12 +87,12 @@ const LoginPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-5 mb-8 animate-fade-in" style={{ animationDelay: '0.1s' }}>
           {/* Email Input */}
           <div>
-            <label className="block text-white font-medium text-sm mb-2.5">Email Address</label>
+            <label className="block text-white font-medium text-sm mb-2.5">Email or Username</label>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
+              placeholder="you@company.com or influencer"
               className="input-field bg-ramp-gray-900 border-ramp-gray-800 text-white placeholder-ramp-gray-600"
               required
             />
