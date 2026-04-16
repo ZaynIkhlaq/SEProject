@@ -69,6 +69,18 @@ async function main() {
 
   console.log('✅ Created influencer:', influencer.email);
 
+  // Clear existing campaigns and applications (for re-seeding)
+  await prisma.campaignApplication.deleteMany({
+    where: { campaign: { brandId: brand.id } }
+  });
+  await prisma.campaign.deleteMany({
+    where: { brandId: brand.id }
+  });
+  await prisma.message.deleteMany({
+    where: { campaignId: { in: [] } }
+  });
+  console.log('🧹 Cleared existing campaigns and applications');
+
   // Create multiple demo campaigns with different niches and products
   const campaigns = await Promise.all([
     // Campaign 1: Tech & Innovation
