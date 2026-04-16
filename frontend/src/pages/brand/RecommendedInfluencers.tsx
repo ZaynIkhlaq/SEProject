@@ -216,7 +216,7 @@ const RecommendedInfluencers: React.FC = () => {
               {/* Actions */}
               <div className="flex gap-3">
                 <button
-                  onClick={() => handleViewProfile(rec.id)}
+                  onClick={() => handleViewProfile(rec.profile.userId)}
                   className="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50"
                 >
                   View Full Profile
