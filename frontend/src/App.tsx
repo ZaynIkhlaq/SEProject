@@ -20,6 +20,7 @@ import BrandProfile from './pages/brand/BrandProfile';
 // Influencer Pages
 import InfluencerDashboard from './pages/influencer/InfluencerDashboard';
 import BrowseCampaigns from './pages/influencer/BrowseCampaigns';
+import InfluencerCampaignDetails from './pages/influencer/InfluencerCampaignDetails';
 import InfluencerProfile from './pages/influencer/InfluencerProfile';
 
 // Shared Pages
@@ -76,6 +77,10 @@ function App() {
           <Route
             path="/influencer/campaigns"
             element={<ProtectedRoute requiredRole="INFLUENCER"><BrowseCampaigns /></ProtectedRoute>}
+          />
+          <Route
+            path="/influencer/campaigns/:campaignId"
+            element={<ProtectedRoute requiredRole="INFLUENCER"><InfluencerCampaignDetails /></ProtectedRoute>}
           />
 
           {/* Admin Routes */}
