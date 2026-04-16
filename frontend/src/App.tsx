@@ -12,6 +12,8 @@ import InfluencerRegisterPage from './pages/auth/InfluencerRegisterPage';
 
 // Brand Pages
 import BrandDashboard from './pages/brand/BrandDashboard';
+import BrandCampaigns from './pages/brand/BrandCampaigns';
+import BrandRecommendations from './pages/brand/BrandRecommendations';
 import CreateCampaign from './pages/brand/CreateCampaign';
 import CampaignDetails from './pages/brand/CampaignDetails';
 import RecommendedInfluencers from './pages/brand/RecommendedInfluencers';
@@ -47,6 +49,14 @@ function App() {
           <Route
             path="/brand/dashboard"
             element={<ProtectedRoute requiredRole="BRAND"><BrandDashboard /></ProtectedRoute>}
+          />
+          <Route
+            path="/brand/campaigns"
+            element={<ProtectedRoute requiredRole="BRAND"><BrandCampaigns /></ProtectedRoute>}
+          />
+          <Route
+            path="/brand/recommendations"
+            element={<ProtectedRoute requiredRole="BRAND"><BrandRecommendations /></ProtectedRoute>}
           />
           <Route
             path="/brand/profile"
