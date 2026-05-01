@@ -35,10 +35,33 @@ router.post('/', authMiddleware, async (req: AuthRequest, res: Response) => {
 router.get('/inbox', authMiddleware, async (req: AuthRequest, res: Response) => {
   try {
     const threads = await MessageService.getInbox(req.user!.id);
+    
+    // Also get conversation opportunities (approved applications with no messages yet)
+    const opportunities = await MessageService.getConversationOpportunities(req.user!.id);
+    
+    // Merge threads and opportunities, avoiding duplicates
+    // Use otherPartyId as key to ensure one conversation per unique person
+    const threadMap = new Map<string, any>();
+    
+    // Add existing message threads first (they have priority)
+    for (const thread of threads) {
+      const key = thread.otherPartyId; // Only key by otherPartyId
+      if (!threadMap.has(key)) {
+        threadMap.set(key, thread);
+      }
+    }
+    
+    // Add opportunities if they don't already have a conversation
+    for (const opp of opportunities) {
+      const key = opp.otherPartyId;
+      if (!threadMap.has(key)) {
+        threadMap.set(key, opp);
+      }
+    }
 
     res.json({
       success: true,
-      data: threads
+      data: Array.from(threadMap.values())
     });
   } catch (error: any) {
     res.status(400).json({

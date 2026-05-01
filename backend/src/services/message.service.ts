@@ -103,16 +103,17 @@ export class MessageService {
       }
     });
 
-    // Group by campaign and extract unique conversation partners
+    // Group by otherPartyId only (one conversation per unique person)
     const threadMap = new Map<string, MessageThread>();
 
     for (const msg of messages) {
-      const threadKey = `${msg.campaignId}-${msg.senderId === userId ? msg.receiverId : msg.senderId}`;
+      const otherPartyId = msg.senderId === userId ? msg.receiverId : msg.senderId;
+      const threadKey = otherPartyId; // Key by otherPartyId only
       
       if (!threadMap.has(threadKey)) {
         const otherParty = msg.senderId === userId ? msg.receiver : msg.sender;
         threadMap.set(threadKey, {
-          campaignId: msg.campaignId,
+          campaignId: msg.campaignId, // Use the campaign from the latest message
           otherPartyId: otherParty.id,
           otherPartyName: otherParty.email,
           lastMessage: undefined,
@@ -186,5 +187,82 @@ export class MessageService {
     });
 
     return count;
+  }
+
+  // Get conversation opportunities (approved applications for messaging)
+  static async getConversationOpportunities(userId: string): Promise<MessageThread[]> {
+    try {
+      // Get all ACCEPTED applications for this user (as influencer)
+      const influencerApps = await prisma.campaignApplication.findMany({
+        where: {
+          influencerId: userId,
+          status: 'ACCEPTED'
+        },
+        include: {
+          campaign: {
+            include: {
+              brand: true
+            }
+          }
+        }
+      });
+
+      // Get all campaigns where this user is the brand with ACCEPTED applications
+      const brandCampaigns = await prisma.campaign.findMany({
+        where: { brandId: userId }
+      });
+
+      let brandApps: any[] = [];
+      
+      // Only query if there are campaigns
+      if (brandCampaigns.length > 0) {
+        brandApps = await prisma.campaignApplication.findMany({
+          where: {
+            campaignId: { in: brandCampaigns.map(c => c.id) },
+            status: 'ACCEPTED'
+          },
+          include: {
+            influencer: true,
+            campaign: true
+          }
+        });
+      }
+
+      // Use otherPartyId as key to deduplicate
+      const opportunityMap = new Map<string, MessageThread>();
+
+      // Add influencer's brand conversation opportunities
+      for (const app of influencerApps) {
+        const key = app.campaign.brandId; // Key by brandId
+        if (!opportunityMap.has(key)) {
+          opportunityMap.set(key, {
+            campaignId: app.campaign.id,
+            otherPartyId: app.campaign.brandId,
+            otherPartyName: app.campaign.brand.email,
+            lastMessage: undefined,
+            unreadCount: 0
+          });
+        }
+      }
+
+      // Add brand's influencer conversation opportunities
+      for (const app of brandApps) {
+        const key = app.influencer.id; // Key by influencerId
+        if (!opportunityMap.has(key)) {
+          opportunityMap.set(key, {
+            campaignId: app.campaign.id,
+            otherPartyId: app.influencer.id,
+            otherPartyName: app.influencer.email,
+            lastMessage: undefined,
+            unreadCount: 0
+          });
+        }
+      }
+
+      return Array.from(opportunityMap.values());
+    } catch (error) {
+      console.error('Error in getConversationOpportunities:', error);
+      return [];
+    }
   }
 }
