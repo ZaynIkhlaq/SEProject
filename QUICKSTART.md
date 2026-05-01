@@ -35,11 +35,11 @@ open http://localhost:5173
 ```
 Brand Account:
   Email: brand@demo.com
-  Password: password123
+  Password: Demo@123
 
 Influencer Account:
   Email: influencer@demo.com
-  Password: password123
+  Password: Demo@123
 ```
 
 ## Test the Platform
