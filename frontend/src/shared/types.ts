@@ -175,6 +175,26 @@ export interface SendMessageRequest {
   text: string;
 }
 
+// ===== NOTIFICATIONS =====
+export interface Notification {
+  id: string;
+  campaignId: string;
+  fromUserId: string;
+  toUserId: string;
+  fromUser?: {
+    id: string;
+    email: string;
+  };
+  campaign?: {
+    id: string;
+    title: string;
+  };
+  type: 'BRAND_INTEREST' | 'APPLICATION_ACCEPTED' | string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
 // ===== REVIEWS & RATINGS =====
 export interface Review {
   id: string;
