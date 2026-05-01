@@ -12,6 +12,7 @@ import messageRoutes from './routes/message.routes';
 import reviewRoutes from './routes/review.routes';
 import adminRoutes from './routes/admin.routes';
 import recommendationRoutes from './routes/recommendation.routes';
+import notificationRoutes from './routes/notification.routes';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler';
@@ -46,6 +47,7 @@ app.use('/api/v1/messages', messageRoutes);
 app.use('/api/v1/reviews', reviewRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/recommendations', recommendationRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
 
 // ===== 404 HANDLER =====
 app.use((req: Request, res: Response) => {

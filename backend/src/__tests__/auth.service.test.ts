@@ -38,7 +38,7 @@ describe('AuthService', () => {
 
       const result = await AuthService.registerBrand({
         email: 'brand@test.com',
-        password: 'password123',
+        password: 'Password123!',
         companyName: 'My Company',
         industry: 'Tech',
         budgetTier: 'TIER_10K_50K',
@@ -55,7 +55,7 @@ describe('AuthService', () => {
       await expect(
         AuthService.registerBrand({
           email: 'existing@test.com',
-          password: 'password123',
+          password: 'Password123!',
           companyName: 'My Company',
           industry: 'Tech',
           budgetTier: 'TIER_10K_50K',
@@ -79,7 +79,7 @@ describe('AuthService', () => {
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       (jwt.sign as jest.Mock).mockReturnValue('token');
 
-      const result = await AuthService.login('user@test.com', 'password123');
+      const result = await AuthService.login('user@test.com', 'Password123!');
 
       expect(result.user.email).toBe('user@test.com');
       expect(result.accessToken).toBe('token');
@@ -89,7 +89,7 @@ describe('AuthService', () => {
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(null);
 
       await expect(
-        AuthService.login('nonexistent@test.com', 'password123')
+        AuthService.login('nonexistent@test.com', 'Password123!')
       ).rejects.toThrow('Invalid email or password');
     });
   });
