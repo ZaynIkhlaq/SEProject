@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useSearchParams } from 'react-router-dom';
 import Layout from '../components/Layout';
 
 interface MessageThread {
@@ -17,10 +18,12 @@ interface Message {
   text: string;
   isRead: boolean;
   createdAt: string;
+  campaignId: string;
 }
 
 const Messaging: React.FC = () => {
-  const { api, user } = useAuth();
+  const { api, user, isLoading: authLoading } = useAuth();
+  const [searchParams] = useSearchParams();
   const [threads, setThreads] = useState<MessageThread[]>([]);
   const [selectedThread, setSelectedThread] = useState<string | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -31,15 +34,45 @@ const Messaging: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const handleSelectThread = async (campaignId: string, otherUserId: string) => {
+    setSelectedThread(campaignId);
+    setSelectedUserId(otherUserId);
+    try {
+      const response = await api.get(`/messages/thread/${campaignId}/${otherUserId}`);
+      setMessages(response.data.data || []);
+    } catch (err) {
+      console.error('Failed to load thread');
+      setMessages([]);
+    }
+  };
+
   // Fetch inbox on mount and poll for updates
   useEffect(() => {
+    if (authLoading || !user) return; // Wait for auth to be ready
+
     const fetchInbox = async () => {
       try {
-        const response = await api.get('/api/v1/messages/inbox');
-        setThreads(response.data.data);
+        const response = await api.get('/messages/inbox');
+        setThreads(response.data.data || []);
         setIsLoading(false);
+
+        // Auto-select thread if campaign and influencer params provided
+        const campaignParam = searchParams.get('campaign');
+        const influencerParam = searchParams.get('influencer');
+        
+        if (campaignParam && influencerParam && response.data.data && response.data.data.length > 0) {
+          const matchingThread = response.data.data.find(
+            (t: MessageThread) => t.campaignId === campaignParam && t.otherPartyId === influencerParam
+          );
+          if (matchingThread) {
+            handleSelectThread(matchingThread.campaignId, matchingThread.otherPartyId);
+          } else if (campaignParam && influencerParam) {
+            // If no thread exists yet, still select it for the first message
+            handleSelectThread(campaignParam, influencerParam);
+          }
+        }
       } catch (err) {
-        console.error('Failed to load inbox');
+        console.error('Failed to load inbox', err);
         setIsLoading(false);
       }
     };
@@ -47,13 +80,13 @@ const Messaging: React.FC = () => {
     fetchInbox();
     const interval = setInterval(fetchInbox, 10000);
     return () => clearInterval(interval);
-  }, [api]);
+  }, [api, searchParams, authLoading, user]);
 
   // Fetch unread count
   useEffect(() => {
     const fetchUnreadCount = async () => {
       try {
-        const response = await api.get('/api/v1/messages/unread/count');
+        const response = await api.get('/messages/unread/count');
         setUnreadCount(response.data.data.unreadCount);
       } catch (err) {
         console.error('Failed to get unread count');
@@ -65,31 +98,20 @@ const Messaging: React.FC = () => {
     return () => clearInterval(interval);
   }, [api]);
 
-  const handleSelectThread = async (campaignId: string, otherUserId: string) => {
-    setSelectedThread(campaignId);
-    setSelectedUserId(otherUserId);
-    try {
-      const response = await api.get(`/api/v1/messages/thread/${campaignId}/${otherUserId}`);
-      setMessages(response.data.data);
-    } catch (err) {
-      console.error('Failed to load thread');
-    }
-  };
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!selectedThread || !selectedUserId || !newMessage.trim()) return;
 
     setIsSending(true);
     try {
-      await api.post('/api/v1/messages', {
+      await api.post('/messages', {
         campaignId: selectedThread,
         receiverId: selectedUserId,
         text: newMessage
       });
       setNewMessage('');
       // Refresh messages
-      const response = await api.get(`/api/v1/messages/thread/${selectedThread}/${selectedUserId}`);
+      const response = await api.get(`/messages/thread/${selectedThread}/${selectedUserId}`);
       setMessages(response.data.data);
     } catch (err) {
       console.error('Failed to send message');
@@ -142,7 +164,6 @@ const Messaging: React.FC = () => {
               <div className="flex-1 overflow-y-auto space-y-1 p-2">
                 {threads.length === 0 ? (
                   <div className="text-center py-12">
-                    <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">MSG</div>
                     <p className="text-ramp-gray-500 dark:text-ramp-gray-500 text-sm">No conversations yet</p>
                   </div>
                 ) : (
@@ -185,7 +206,6 @@ const Messaging: React.FC = () => {
                   <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-ramp-gray-50 dark:from-ramp-gray-900 to-ramp-gray-100 dark:to-ramp-gray-800">
                     {messages.length === 0 ? (
                       <div className="text-center py-12">
-                        <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">NEW</div>
                         <p className="text-ramp-gray-500 dark:text-ramp-gray-500 text-sm">Start the conversation</p>
                       </div>
                     ) : (
@@ -197,14 +217,18 @@ const Messaging: React.FC = () => {
                           <div
                             className={`max-w-xs lg:max-w-md px-4 py-2.5 rounded-lg ${
                               message.senderId === user?.id
-                                ? 'bg-ramp-purple-600 text-white rounded-br-none'
+                                ? 'bg-ramp-purple-600 rounded-br-none'
                                 : 'bg-white dark:bg-ramp-gray-800 text-ramp-black dark:text-white border border-ramp-gray-200 dark:border-ramp-gray-700 rounded-bl-none'
                             }`}
                           >
-                            <p className="text-sm">{message.text}</p>
+                            <p className={`text-sm font-semibold ${
+                              message.senderId === user?.id
+                                ? 'text-white'
+                                : 'text-ramp-black dark:text-white'
+                            }`}>{message.text}</p>
                             <p className={`text-xs mt-1 ${
                               message.senderId === user?.id
-                                ? 'text-ramp-purple-200'
+                                ? 'text-white opacity-80'
                                 : 'text-ramp-gray-500 dark:text-ramp-gray-400'
                             }`}>
                               {new Date(message.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

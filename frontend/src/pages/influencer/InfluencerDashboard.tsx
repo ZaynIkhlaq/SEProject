@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { CampaignApplication, InfluencerProfile } from '../../shared/types';
 import Layout from '../../components/Layout';
+import NotificationCenter from '../../components/NotificationCenter';
 
 const InfluencerDashboard: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [applications, setApplications] = useState<CampaignApplication[]>([]);
   const [profile, setProfile] = useState<InfluencerProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,12 +36,19 @@ const InfluencerDashboard: React.FC = () => {
     }
   };
 
+  const handleMessageBrand = (campaignId: string) => {
+    // Navigate to messaging with campaign context
+    navigate(`/messaging?campaign=${campaignId}`);
+  };
+
   const stats = {
     totalApplications: applications.length,
     pending: applications.filter(a => a.status === 'PENDING').length,
     accepted: applications.filter(a => a.status === 'ACCEPTED').length,
     rejected: applications.filter(a => a.status === 'REJECTED').length,
   };
+
+  const acceptedApplications = applications.filter(a => a.status === 'ACCEPTED');
 
   if (loading) {
     return (
@@ -77,13 +86,15 @@ const InfluencerDashboard: React.FC = () => {
           </div>
         )}
 
+        {/* Notifications */}
+        <NotificationCenter />
+
         {/* Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Total Applications */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-ramp-purple-100 dark:bg-ramp-purple-900 flex items-center justify-center group-hover:bg-ramp-purple-200 dark:group-hover:bg-ramp-purple-800 transition-colors">
-                <span className="text-xs font-semibold text-ramp-purple-700 dark:text-ramp-purple-300">APP</span>
               </div>
               <span className="text-xs font-medium bg-ramp-purple-100 dark:bg-ramp-purple-900 text-ramp-purple-700 dark:text-ramp-purple-300 px-2 py-1 rounded">
                 Total
@@ -97,7 +108,6 @@ const InfluencerDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800 transition-colors">
-                <span className="text-xs font-semibold text-yellow-700 dark:text-yellow-300">PND</span>
               </div>
               <span className="text-xs font-medium bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded">
                 Waiting
@@ -111,7 +121,6 @@ const InfluencerDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors">
-                <span className="text-xs font-semibold text-green-700 dark:text-green-300">ACC</span>
               </div>
               <span className="text-xs font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
                 Success
@@ -125,7 +134,6 @@ const InfluencerDashboard: React.FC = () => {
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
             <div className="flex items-start justify-between mb-4">
               <div className="w-12 h-12 rounded-lg bg-ramp-red-100 dark:bg-ramp-red-900 flex items-center justify-center group-hover:bg-ramp-red-200 dark:group-hover:bg-ramp-red-800 transition-colors">
-                <span className="text-xs font-semibold text-ramp-red-700 dark:text-ramp-red-300">REJ</span>
               </div>
               <span className="text-xs font-medium bg-ramp-red-100 dark:bg-ramp-red-900 text-ramp-red-700 dark:text-ramp-red-300 px-2 py-1 rounded">
                 Declined
@@ -135,6 +143,69 @@ const InfluencerDashboard: React.FC = () => {
             <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.rejected}</p>
           </div>
         </div>
+
+        {/* Actions */}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link
+            to="/influencer/campaigns"
+            className="btn-primary bg-ramp-purple-600 hover:bg-ramp-purple-700 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-ramp-lg transition-all"
+          >
+            Browse Campaigns
+          </Link>
+          <Link
+            to="/influencer/profile"
+            className="btn-secondary bg-ramp-gray-100 dark:bg-ramp-gray-800 text-ramp-black dark:text-white font-medium py-3 px-6 rounded-lg border border-ramp-gray-300 dark:border-ramp-gray-700 hover:bg-ramp-gray-200 dark:hover:bg-ramp-gray-700 transition-all"
+          >
+            Edit Profile
+          </Link>
+          <Link
+            to="/messaging"
+            className="btn-secondary bg-ramp-green-100 dark:bg-ramp-green-900 text-ramp-green-700 dark:text-ramp-green-300 font-medium py-3 px-6 rounded-lg border border-ramp-green-300 dark:border-ramp-green-700 hover:bg-ramp-green-200 dark:hover:bg-ramp-green-800 transition-all"
+          >
+            View Conversations
+          </Link>
+        </div>
+
+        {/* Approved Connections Section */}
+        {acceptedApplications.length > 0 && (
+          <div className="space-y-4">
+            <div>
+              <h2 className="text-2xl font-bold text-ramp-black dark:text-white mb-2">Active Collaborations</h2>
+              <p className="text-ramp-gray-600 dark:text-ramp-gray-400">Brands you're connected with. Click to start messaging!</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {acceptedApplications.map((app) => (
+                <div
+                  key={app.id}
+                  className="card hover:shadow-ramp-lg transition-all duration-200 group"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-ramp-green-600 dark:text-ramp-green-400">
+                        Connected
+                      </h3>
+                      <p className="text-sm text-ramp-gray-600 dark:text-ramp-gray-400 mt-1">
+                        Campaign: {app.campaignId}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-ramp-gray-500 dark:text-ramp-gray-500 mb-4">
+                    Since {new Date(app.createdAt).toLocaleDateString()}
+                  </p>
+
+                  <button
+                    onClick={() => handleMessageBrand(app.campaignId)}
+                    className="w-full px-4 py-2 bg-ramp-green-600 hover:bg-ramp-green-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  >
+                    Message Brand
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-4">
@@ -161,7 +232,7 @@ const InfluencerDashboard: React.FC = () => {
 
           {applications.length === 0 ? (
             <div className="card border-2 border-dashed border-ramp-gray-300 dark:border-ramp-gray-700 text-center py-16">
-              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">APPS</div>
+              <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3"></div>
               <h3 className="text-lg font-semibold text-ramp-black dark:text-white mb-2">
                 No applications yet
               </h3>

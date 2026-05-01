@@ -14,19 +14,6 @@ const getToastStyles = (type: ToastType) => {
   }
 };
 
-const getToastIcon = (type: ToastType) => {
-  switch (type) {
-    case 'success':
-      return 'OK';
-    case 'error':
-      return 'ERR';
-    case 'warning':
-      return '!';
-    case 'info':
-      return 'i';
-  }
-};
-
 const ToastItem: React.FC<{ toast: any; onRemove: (id: string) => void }> = ({
   toast,
   onRemove,
@@ -42,7 +29,6 @@ const ToastItem: React.FC<{ toast: any; onRemove: (id: string) => void }> = ({
         toast.type
       )} rounded-lg p-4 shadow-lg flex items-center gap-3 animate-slide-in-left max-w-sm`}
     >
-      <span className="text-lg font-bold flex-shrink-0">{getToastIcon(toast.type)}</span>
       <p className="text-sm font-medium flex-1">{toast.message}</p>
       <button
         onClick={() => onRemove(toast.id)}

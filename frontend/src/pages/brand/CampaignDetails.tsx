@@ -8,6 +8,11 @@ interface ApplicationWithProfile extends CampaignApplication {
   influencerName?: string;
 }
 
+interface MessageState {
+  campaignId: string;
+  influencerId: string;
+}
+
 const CampaignDetails: React.FC = () => {
   const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
@@ -61,9 +66,20 @@ const CampaignDetails: React.FC = () => {
       setActionLoading(true);
       await api.patch(`/applications/${applicationId}/accept`);
       
+      const acceptedApp = applications.find(app => app.id === applicationId);
+      
       setApplications(applications.map(app =>
         app.id === applicationId ? { ...app, status: 'ACCEPTED' } : app
       ));
+
+      // Show success and offer to message
+      const shouldMessage = window.confirm(
+        'Application accepted! Would you like to message this influencer now?'
+      );
+      
+      if (shouldMessage && acceptedApp) {
+        handleMessageInfluencer(acceptedApp.influencerId);
+      }
     } catch (err: any) {
       alert(err.response?.data?.error || 'Failed to accept application');
     } finally {
@@ -83,6 +99,13 @@ const CampaignDetails: React.FC = () => {
       alert(err.response?.data?.error || 'Failed to reject application');
     } finally {
       setActionLoading(false);
+    }
+  };
+
+  const handleMessageInfluencer = (influencerId: string) => {
+    if (campaignId) {
+      // Navigate to messaging with campaign and influencer context
+      navigate(`/messaging?campaign=${campaignId}&influencer=${influencerId}`);
     }
   };
 
@@ -281,6 +304,23 @@ const CampaignDetails: React.FC = () => {
                       className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:bg-red-300"
                     >
                       Reject
+                    </button>
+                  </div>
+                )}
+
+                {app.status === 'ACCEPTED' && (
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => handleMessageInfluencer(app.influencerId)}
+                      className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
+                    >
+                      Message Influencer
+                    </button>
+                    <button
+                      onClick={() => navigate(`/brand/campaign/${campaignId}/influencer/${app.influencerId}`)}
+                      className="px-4 py-2 bg-gray-200 text-gray-900 rounded-lg hover:bg-gray-300"
+                    >
+                      View Profile
                     </button>
                   </div>
                 )}

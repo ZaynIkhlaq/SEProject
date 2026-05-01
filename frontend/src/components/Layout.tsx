@@ -23,14 +23,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     { label: 'Dashboard', path: '/brand/dashboard', icon: 'DB' },
     { label: 'Campaigns', path: '/brand/campaigns', icon: 'CP' },
     { label: 'Recommendations', path: '/brand/recommendations', icon: 'RC' },
-    { label: 'Messages', path: '/messages', icon: 'MS' },
+    { label: 'Messages', path: '/messaging', icon: 'MS' },
     { label: 'Profile', path: '/brand/profile', icon: 'PF' },
   ];
 
   const influencerNavItems = [
     { label: 'Dashboard', path: '/influencer/dashboard', icon: 'DB' },
     { label: 'Campaigns', path: '/influencer/campaigns', icon: 'CP' },
-    { label: 'Messages', path: '/messages', icon: 'MS' },
+    { label: 'Messages', path: '/messaging', icon: 'MS' },
     { label: 'Profile', path: '/influencer/profile', icon: 'PF' },
   ];
 
@@ -72,9 +72,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     : 'text-ramp-gray-700 dark:text-ramp-gray-400 hover:bg-ramp-gray-100 dark:hover:bg-ramp-gray-800'
                 }`}
               >
-                <span className="mr-2 inline-flex items-center justify-center w-6 h-6 rounded bg-ramp-gray-200 dark:bg-ramp-gray-700 text-[10px] font-semibold text-ramp-gray-700 dark:text-ramp-gray-200">
-                  {item.icon}
-                </span>
                 {item.label}
               </Link>
             ))}
@@ -83,10 +80,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {/* User Menu */}
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 text-sm">
-              <div className="w-8 h-8 rounded-full bg-ramp-purple-600 flex items-center justify-center">
-                <span className="text-white font-bold">{user?.email.charAt(0).toUpperCase()}</span>
-              </div>
-              <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{user?.email}</span>
+                <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{user?.email}</span>
             </div>
             <button
               onClick={handleLogout}
@@ -122,9 +116,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       : 'text-ramp-gray-700 dark:text-ramp-gray-400 hover:bg-ramp-gray-100 dark:hover:bg-ramp-gray-800'
                   }`}
                 >
-                  <span className="mr-2 inline-flex items-center justify-center w-6 h-6 rounded bg-ramp-gray-200 dark:bg-ramp-gray-700 text-[10px] font-semibold text-ramp-gray-700 dark:text-ramp-gray-200">
-                    {item.icon}
-                  </span>
                   {item.label}
                 </Link>
               ))}

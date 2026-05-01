@@ -5,9 +5,15 @@ import axios from 'axios';
 import { Campaign } from '../../shared/types';
 import Layout from '../../components/Layout';
 
+interface CampaignWithStats extends Campaign {
+  applicationsCount?: number;
+  acceptedCount?: number;
+  pendingCount?: number;
+}
+
 const BrandCampaigns: React.FC = () => {
-  const { user } = useAuth();
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const { user, api } = useAuth();
+  const [campaigns, setCampaigns] = useState<CampaignWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -19,7 +25,27 @@ const BrandCampaigns: React.FC = () => {
     try {
       setLoading(true);
       const response = await axios.get('/api/v1/campaigns');
-      setCampaigns(response.data.data);
+      let campaignsData = response.data.data;
+
+      // Fetch applications for each campaign to show counts
+      campaignsData = await Promise.all(
+        campaignsData.map(async (campaign: Campaign) => {
+          try {
+            const appsRes = await api.get(`/applications/campaign/${campaign.id}`);
+            const applications = appsRes.data.data || [];
+            return {
+              ...campaign,
+              applicationsCount: applications.length,
+              acceptedCount: applications.filter((a: any) => a.status === 'ACCEPTED').length,
+              pendingCount: applications.filter((a: any) => a.status === 'PENDING').length
+            };
+          } catch {
+            return campaign;
+          }
+        })
+      );
+
+      setCampaigns(campaignsData);
       setError('');
     } catch (err: any) {
       setError(err.response?.data?.error || 'Failed to load campaigns');
@@ -118,6 +144,28 @@ const BrandCampaigns: React.FC = () => {
                         {new Date(campaign.deadline).toLocaleDateString()}
                       </span>
                     </div>
+                    {campaign.applicationsCount !== undefined && (
+                      <div className="flex items-center gap-2 pt-2 border-t border-ramp-gray-200 dark:border-ramp-gray-700">
+                        <div className="flex-1">
+                          <span className="text-xs text-ramp-gray-600 dark:text-ramp-gray-400">Applications</span>
+                          <p className="font-semibold text-ramp-black dark:text-white">{campaign.applicationsCount}</p>
+                        </div>
+                        {campaign.acceptedCount !== undefined && campaign.acceptedCount > 0 && (
+                          <div className="bg-ramp-green-100 dark:bg-ramp-green-900 px-2 py-1 rounded">
+                            <p className="text-xs text-ramp-green-700 dark:text-ramp-green-300">
+                              {campaign.acceptedCount} Accepted
+                            </p>
+                          </div>
+                        )}
+                        {campaign.pendingCount !== undefined && campaign.pendingCount > 0 && (
+                          <div className="bg-ramp-yellow-100 dark:bg-ramp-yellow-900 px-2 py-1 rounded">
+                            <p className="text-xs text-ramp-yellow-700 dark:text-ramp-yellow-300">
+                              {campaign.pendingCount} Pending
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t border-ramp-gray-200 dark:border-ramp-gray-700">

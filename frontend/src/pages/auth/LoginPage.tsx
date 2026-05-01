@@ -158,21 +158,6 @@ const LoginPage: React.FC = () => {
           </Link>
         </div>
 
-        {/* Demo Credentials - Development Only */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-8 p-4 bg-ramp-gray-900 rounded-lg border border-ramp-gray-800 text-center">
-            <p className="text-ramp-gray-500 text-xs font-medium mb-2">Demo Credentials</p>
-            <div className="space-y-1.5 text-xs">
-              <p className="text-ramp-gray-400">
-                <span className="text-ramp-purple-400 font-medium">Brand:</span> brand@demo.com
-              </p>
-              <p className="text-ramp-gray-400">
-                <span className="text-ramp-teal-400 font-medium">Creator:</span> influencer@demo.com
-              </p>
-              <p className="text-ramp-gray-500">Password: <span className="font-mono">password123</span></p>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ const RecommendedInfluencers: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [appliedIds, setAppliedIds] = useState<Set<string>>(new Set());
+  const [interestedIds, setInterestedIds] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchRecommendations();
@@ -32,6 +32,20 @@ const RecommendedInfluencers: React.FC = () => {
 
   const handleViewProfile = (influencerId: string) => {
     navigate(`/profile/${influencerId}`);
+  };
+
+  const handleExpressInterest = async (influencerId: string, influencerEmail: string) => {
+    try {
+      setActionLoading(influencerId);
+      await api.post(`/recommendations/${campaignId}/interest/${influencerId}`);
+      setInterestedIds(new Set([...interestedIds, influencerId]));
+      // Show toast notification
+      console.log(`Interest sent to ${influencerEmail}`);
+    } catch (err: any) {
+      console.error('Error expressing interest:', err);
+    } finally {
+      setActionLoading(null);
+    }
   };
 
   if (loading) {
@@ -222,13 +236,21 @@ const RecommendedInfluencers: React.FC = () => {
                   View Full Profile
                 </button>
                 <button
-                  onClick={() => {
-                    /* Will navigate to apply flow */
-                    navigate('/brand/dashboard');
-                  }}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  onClick={() => handleExpressInterest(rec.id, rec.profile.userId)}
+                  disabled={actionLoading === rec.id || interestedIds.has(rec.id)}
+                  className={`flex-1 px-4 py-2 rounded-lg transition-colors ${
+                    interestedIds.has(rec.id)
+                      ? 'bg-green-600 text-white cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
                 >
-                  {appliedIds.has(rec.id) ? 'Applied' : 'Interest'}
+                  {actionLoading === rec.id ? (
+                    <span>Sending...</span>
+                  ) : interestedIds.has(rec.id) ? (
+                    'Interest Sent'
+                  ) : (
+                    'Express Interest'
+                  )}
                 </button>
               </div>
             </div>

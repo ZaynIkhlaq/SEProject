@@ -155,7 +155,6 @@ const BrowseCampaigns: React.FC = () => {
           <>
             {filteredCampaigns.length === 0 ? (
               <div className="card border-2 border-dashed border-ramp-gray-300 dark:border-ramp-gray-700 text-center py-20">
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-ramp-gray-100 dark:bg-ramp-gray-800 text-xs font-semibold text-ramp-gray-600 dark:text-ramp-gray-300 mb-3">NONE</div>
                 <h3 className="text-lg font-semibold text-ramp-black dark:text-white mb-2">
                   No campaigns found
                 </h3>

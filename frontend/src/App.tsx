@@ -101,7 +101,7 @@ function App() {
 
           {/* Shared Routes */}
           <Route
-            path="/messages"
+            path="/messaging"
             element={<ProtectedRoute><Messaging /></ProtectedRoute>}
           />
           <Route
