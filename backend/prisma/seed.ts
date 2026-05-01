@@ -7,12 +7,15 @@ async function main() {
   console.log('🌱 Starting database seed...');
 
   // Create demo brand
-  const hashedPassword = await bcrypt.hash('password123', 10);
+  const hashedPassword = await bcrypt.hash('Demo@123', 10);
 
-  const brand = await prisma.user.upsert({
-    where: { email: 'brand@demo.com' },
-    update: {},
-    create: {
+  // Delete existing brand to start fresh
+  await prisma.user.deleteMany({
+    where: { email: 'brand@demo.com' }
+  });
+
+  const brand = await prisma.user.create({
+    data: {
       email: 'brand@demo.com',
       password: hashedPassword,
       role: 'BRAND',
@@ -32,11 +35,14 @@ async function main() {
 
   console.log('✅ Created brand:', brand.email);
 
+  // Delete existing influencer to start fresh
+  await prisma.user.deleteMany({
+    where: { email: 'influencer@demo.com' }
+  });
+
   // Create demo influencer
-  const influencer = await prisma.user.upsert({
-    where: { email: 'influencer@demo.com' },
-    update: {},
-    create: {
+  const influencer = await prisma.user.create({
+    data: {
       email: 'influencer@demo.com',
       password: hashedPassword,
       role: 'INFLUENCER',

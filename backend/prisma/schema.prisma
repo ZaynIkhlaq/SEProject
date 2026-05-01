@@ -29,6 +29,8 @@ model User {
   receivedMessages   Message[]         @relation("Receiver")
   givenReviews       Review[]          @relation("Reviewer")
   receivedReviews    Review[]          @relation("Reviewed")
+  sentNotifications  Notification[]    @relation("NotificationFrom")
+  receivedNotifications Notification[] @relation("NotificationTo")
   
   isActive  Boolean   @default(true)
   createdAt DateTime  @default(now())
@@ -134,6 +136,7 @@ model Campaign {
   applications      CampaignApplication[]
   messages          Message[]
   reviews           Review[]
+  notifications     Notification[]
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -188,6 +191,33 @@ model Message {
   @@index([campaignId])
   @@index([senderId])
   @@index([receiverId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// ===== NOTIFICATIONS =====
+model Notification {
+  id                String @id @default(cuid())
+  campaignId        String
+  campaign          Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  fromUserId        String
+  fromUser          User   @relation("NotificationFrom", fields: [fromUserId], references: [id], onDelete: Cascade)
+  
+  toUserId          String
+  toUser            User   @relation("NotificationTo", fields: [toUserId], references: [id], onDelete: Cascade)
+  
+  type              String // "BRAND_INTEREST", "APPLICATION_ACCEPTED", etc.
+  message           String
+  isRead            Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@index([campaignId])
+  @@index([fromUserId])
+  @@index([toUserId])
+  @@index([type])
   @@index([isRead])
   @@index([createdAt])
 }
