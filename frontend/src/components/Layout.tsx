@@ -54,9 +54,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           {/* Logo */}
           <Link to="/brand/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-ramp-purple-600 to-ramp-blue-500 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">IH</span>
-            </div>
+            <img src="/logo.svg" alt="InfluencerHub" className="w-14 h-14" />
             <span className="font-bold text-xl text-ramp-black dark:text-white hidden sm:inline">InfluencerHub</span>
           </Link>
 

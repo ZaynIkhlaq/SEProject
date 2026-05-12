@@ -64,9 +64,7 @@ const LoginPage: React.FC = () => {
       <div className="relative z-10 w-full max-w-md">
         {/* Logo/Header */}
         <div className="text-center mb-12 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-lg bg-gradient-to-br from-ramp-purple-600 to-ramp-blue-500 mb-6">
-            <span className="text-white font-bold text-xl">IH</span>
-          </div>
+          <img src="/logo.svg" alt="InfluencerHub" className="inline-block w-20 h-20 mb-6" />
           <h1 className="text-4xl font-bold text-white mb-3 tracking-tight">InfluencerHub</h1>
           <p className="text-ramp-gray-400 text-sm">Connect brands with influencers. Collaborate at scale.</p>
         </div>

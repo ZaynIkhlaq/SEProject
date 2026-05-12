@@ -58,9 +58,7 @@ const InfluencerRegisterPage: React.FC = () => {
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
           <Link to="/login" className="inline-flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-ramp-purple-600 to-ramp-blue-500 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">IH</span>
-            </div>
+            <img src="/logo.svg" alt="InfluencerHub" className="w-14 h-14" />
             <span className="font-bold text-lg text-white">InfluencerHub</span>
           </Link>
           <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Creator Account</h1>
