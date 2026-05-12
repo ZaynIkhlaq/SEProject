@@ -93,54 +93,54 @@ const InfluencerDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {/* Total Applications */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-ramp-purple-100 dark:bg-ramp-purple-900 flex items-center justify-center group-hover:bg-ramp-purple-200 dark:group-hover:bg-ramp-purple-800 transition-colors">
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-ramp-purple-100 to-ramp-purple-200 dark:from-ramp-purple-900 dark:to-ramp-purple-800 flex items-center justify-center group-hover:shadow-ramp-md transition-all">
+                <span className="text-4xl font-bold text-ramp-purple-700 dark:text-ramp-purple-300">{stats.totalApplications}</span>
               </div>
               <span className="text-xs font-medium bg-ramp-purple-100 dark:bg-ramp-purple-900 text-ramp-purple-700 dark:text-ramp-purple-300 px-2 py-1 rounded">
                 Total
               </span>
             </div>
-            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm mb-2">Applications</p>
-            <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.totalApplications}</p>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm">Applications</p>
           </div>
 
           {/* Pending */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-yellow-100 dark:bg-yellow-900 flex items-center justify-center group-hover:bg-yellow-200 dark:group-hover:bg-yellow-800 transition-colors">
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-yellow-100 to-yellow-200 dark:from-yellow-900 dark:to-yellow-800 flex items-center justify-center group-hover:shadow-ramp-md transition-all">
+                <span className="text-4xl font-bold text-yellow-700 dark:text-yellow-300">{stats.pending}</span>
               </div>
               <span className="text-xs font-medium bg-yellow-100 dark:bg-yellow-900 text-yellow-700 dark:text-yellow-300 px-2 py-1 rounded">
                 Waiting
               </span>
             </div>
-            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm mb-2">Pending</p>
-            <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.pending}</p>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm">Pending</p>
           </div>
 
           {/* Accepted */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-green-100 dark:bg-green-900 flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-800 transition-colors">
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 flex items-center justify-center group-hover:shadow-ramp-md transition-all">
+                <span className="text-4xl font-bold text-green-700 dark:text-green-300">{stats.accepted}</span>
               </div>
               <span className="text-xs font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
                 Success
               </span>
             </div>
-            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm mb-2">Accepted</p>
-            <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.accepted}</p>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm">Accepted</p>
           </div>
 
           {/* Rejected */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 group">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-ramp-red-100 dark:bg-ramp-red-900 flex items-center justify-center group-hover:bg-ramp-red-200 dark:group-hover:bg-ramp-red-800 transition-colors">
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-ramp-red-100 to-ramp-red-200 dark:from-ramp-red-900 dark:to-ramp-red-800 flex items-center justify-center group-hover:shadow-ramp-md transition-all">
+                <span className="text-4xl font-bold text-ramp-red-700 dark:text-ramp-red-300">{stats.rejected}</span>
               </div>
               <span className="text-xs font-medium bg-ramp-red-100 dark:bg-ramp-red-900 text-ramp-red-700 dark:text-ramp-red-300 px-2 py-1 rounded">
                 Declined
               </span>
             </div>
-            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm mb-2">Rejected</p>
-            <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.rejected}</p>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm">Rejected</p>
           </div>
         </div>
 

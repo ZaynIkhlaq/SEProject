@@ -57,7 +57,10 @@ const BrandDashboard: React.FC = () => {
       // Get approved influencers from inbox endpoint (which includes conversation opportunities)
       try {
         const inboxRes = await api.get('/messages/inbox');
-        const allApprovedInfluencers = (inboxRes.data.data || []).slice(0, 10);
+        const allApprovedInfluencers = (inboxRes.data.data || []).map((thread: any) => ({
+          ...thread,
+          campaignName: campaignsWithApprovals.find(c => c.id === thread.campaignId)?.title
+        })).slice(0, 10);
         setApprovedInfluencers(allApprovedInfluencers);
       } catch (err) {
         console.error('Failed to fetch approved influencers from inbox', err);
@@ -122,41 +125,41 @@ const BrandDashboard: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Total Campaigns */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 cursor-pointer group">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-ramp-purple-100 dark:bg-ramp-purple-900 flex items-center justify-center group-hover:bg-ramp-purple-200 dark:group-hover:bg-ramp-purple-800 transition-colors">
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-ramp-purple-100 to-ramp-purple-200 dark:from-ramp-purple-900 dark:to-ramp-purple-800 flex items-center justify-center group-hover:shadow-ramp-md transition-all">
+                <span className="text-4xl font-bold text-ramp-purple-700 dark:text-ramp-purple-300">{stats.totalCampaigns}</span>
               </div>
               <span className="text-xs font-medium bg-ramp-purple-100 dark:bg-ramp-purple-900 text-ramp-purple-700 dark:text-ramp-purple-300 px-2 py-1 rounded">
                 Active
               </span>
             </div>
-            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm mb-2">Total Campaigns</p>
-            <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.totalCampaigns}</p>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm">Total Campaigns</p>
           </div>
 
           {/* Active Campaigns */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 cursor-pointer group">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-ramp-teal-100 dark:bg-ramp-teal-900 flex items-center justify-center group-hover:bg-ramp-teal-200 dark:group-hover:bg-ramp-teal-800 transition-colors">
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-ramp-teal-100 to-ramp-teal-200 dark:from-ramp-teal-900 dark:to-ramp-teal-800 flex items-center justify-center group-hover:shadow-ramp-md transition-all">
+                <span className="text-4xl font-bold text-ramp-teal-700 dark:text-ramp-teal-300">{stats.activeCampaigns}</span>
               </div>
               <span className="text-xs font-medium bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
                 Running
               </span>
             </div>
-            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm mb-2">Active Campaigns</p>
-            <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.activeCampaigns}</p>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm">Active Campaigns</p>
           </div>
 
           {/* Completed Campaigns */}
           <div className="card hover:shadow-ramp-md transition-all duration-300 cursor-pointer group">
-            <div className="flex items-start justify-between mb-4">
-              <div className="w-12 h-12 rounded-lg bg-ramp-blue-100 dark:bg-ramp-blue-900 flex items-center justify-center group-hover:bg-ramp-blue-200 dark:group-hover:bg-ramp-blue-800 transition-colors">
+            <div className="flex items-start justify-between mb-6">
+              <div className="w-24 h-24 rounded-lg bg-gradient-to-br from-ramp-blue-100 to-ramp-blue-200 dark:from-ramp-blue-900 dark:to-ramp-blue-800 flex items-center justify-center group-hover:shadow-ramp-md transition-all">
+                <span className="text-4xl font-bold text-ramp-blue-700 dark:text-ramp-blue-300">{stats.completedCampaigns}</span>
               </div>
               <span className="text-xs font-medium bg-ramp-blue-100 dark:bg-ramp-blue-900 text-ramp-blue-600 dark:text-ramp-blue-300 px-2 py-1 rounded">
                 Complete
               </span>
             </div>
-            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm mb-2">Completed</p>
-            <p className="text-3xl font-bold text-ramp-black dark:text-white">{stats.completedCampaigns}</p>
+            <p className="text-ramp-gray-600 dark:text-ramp-gray-400 text-sm">Completed</p>
           </div>
         </div>
 
@@ -186,7 +189,7 @@ const BrandDashboard: React.FC = () => {
         {approvedInfluencers.length > 0 && (
           <div className="space-y-4">
             <div>
-              <h2 className="text-2xl font-bold text-ramp-black dark:text-white mb-2">Approved Influencers</h2>
+              <h2 className="text-2xl font-bold text-ramp-black dark:text-white mb-2">Connected Influencers</h2>
               <p className="text-ramp-gray-600 dark:text-ramp-gray-400">Your active collaborations. Click to message them!</p>
             </div>
 
@@ -204,6 +207,11 @@ const BrandDashboard: React.FC = () => {
                       <p className="text-sm text-ramp-gray-600 dark:text-ramp-gray-400 mt-1">
                         {thread.otherPartyName}
                       </p>
+                      {thread.campaignName && (
+                        <p className="text-xs text-ramp-gray-500 dark:text-ramp-gray-500 mt-2">
+                          Campaign: {thread.campaignName}
+                        </p>
+                      )}
                     </div>
                   </div>
                   
@@ -224,22 +232,6 @@ const BrandDashboard: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <Link
-            to="/brand/campaign/create"
-            className="btn-primary bg-ramp-purple-600 hover:bg-ramp-purple-700 text-white font-medium py-3 px-6 rounded-lg flex items-center justify-center gap-2 shadow-lg hover:shadow-ramp-lg transition-all"
-          >
-            Create Campaign
-          </Link>
-          <Link
-            to="/brand/profile"
-            className="btn-secondary bg-ramp-gray-100 dark:bg-ramp-gray-800 text-ramp-black dark:text-white font-medium py-3 px-6 rounded-lg border border-ramp-gray-300 dark:border-ramp-gray-700 hover:bg-ramp-gray-200 dark:hover:bg-ramp-gray-700 transition-all"
-          >
-            Edit Profile
-          </Link>
-        </div>
 
         {/* Campaigns Section */}
         <div className="space-y-4">
