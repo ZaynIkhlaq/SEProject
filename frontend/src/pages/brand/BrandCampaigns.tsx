@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Campaign } from '../../shared/types';
+import { formatBudgetTier } from '../../shared/utils';
 import Layout from '../../components/Layout';
 
 interface CampaignWithStats extends Campaign {
@@ -135,7 +136,7 @@ const BrandCampaigns: React.FC = () => {
                     <div className="flex items-center justify-between">
                       <span className="text-sm text-ramp-gray-600 dark:text-ramp-gray-400">Budget Tier</span>
                       <span className="font-semibold text-ramp-black dark:text-white">
-                        {campaign.budgetTier}
+                        {formatBudgetTier(campaign.budgetTier)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">

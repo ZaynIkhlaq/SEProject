@@ -188,28 +188,28 @@ async function main() {
 
   console.log('✅ Created application');
 
-  // Create messages
-  const message1 = await prisma.message.create({
-    data: {
-      campaignId: campaigns[0].id,
-      senderId: brand.id,
-      receiverId: influencer.id,
-      text: 'Hi! We love your content. Would you be interested in promoting our new phone?',
-      isRead: false
-    }
-  });
+  // Skip creating demo messages for now
+  // const message1 = await prisma.message.create({
+  //   data: {
+  //     campaignId: campaigns[0].id,
+  //     senderId: brand.id,
+  //     receiverId: influencer.id,
+  //     text: 'Hi! We love your content. Would you be interested in promoting our new phone?',
+  //     isRead: false
+  //   }
+  // });
 
-  const message2 = await prisma.message.create({
-    data: {
-      campaignId: campaigns[0].id,
-      senderId: influencer.id,
-      receiverId: brand.id,
-      text: 'Thanks for reaching out! I\'m definitely interested. What\'s the timeline and deliverables?',
-      isRead: true
-    }
-  });
+  // const message2 = await prisma.message.create({
+  //   data: {
+  //     campaignId: campaigns[0].id,
+  //     senderId: influencer.id,
+  //     receiverId: brand.id,
+  //     text: 'Thanks for reaching out! I\'m definitely interested. What\'s the timeline and deliverables?',
+  //     isRead: true
+  //   }
+  // });
 
-  console.log('✅ Created messages');
+  // console.log('✅ Created messages');
 
   // Create application and review on the completed campaign
   const completedApplication = await prisma.campaignApplication.create({

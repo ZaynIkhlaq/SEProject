@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import Layout from '../../components/Layout';
 import { Campaign, CampaignApplication } from '../../shared/types';
+import { formatBudgetTier } from '../../shared/utils';
 import { useAuth } from '../../context/AuthContext';
 
 const InfluencerCampaignDetails: React.FC = () => {
@@ -126,7 +127,7 @@ const InfluencerCampaignDetails: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wider text-ramp-gray-500">Budget Tier</p>
-                  <p className="text-sm text-ramp-black dark:text-white mt-1">{campaign.budgetTier}</p>
+                  <p className="text-sm text-ramp-black dark:text-white mt-1">{formatBudgetTier(campaign.budgetTier)}</p>
                 </div>
                 <div>
                   <p className="text-xs uppercase tracking-wider text-ramp-gray-500">Influencers Needed</p>

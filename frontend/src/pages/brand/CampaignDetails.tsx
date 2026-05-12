@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Campaign, CampaignApplication, InfluencerProfile } from '../../shared/types';
+import { formatBudgetTier } from '../../shared/utils';
 import { useAuth } from '../../context/AuthContext';
 
 interface ApplicationWithProfile extends CampaignApplication {
@@ -178,7 +179,7 @@ const CampaignDetails: React.FC = () => {
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">Budget Tier</p>
-            <p className="text-lg text-gray-900 mt-1">{campaign.budgetTier}</p>
+            <p className="text-lg text-gray-900 mt-1">{formatBudgetTier(campaign.budgetTier)}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500">Influencers Needed</p>

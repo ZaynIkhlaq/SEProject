@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { BrandProfile, InfluencerProfile, PortfolioItem } from '../shared/types';
+import { formatBudgetTier } from '../shared/utils';
 import Layout from '../components/Layout';
 
 interface PublicInfluencerProfileWithPortfolio extends InfluencerProfile {
@@ -89,10 +90,9 @@ const PublicProfile: React.FC = () => {
   return (
     <Layout>
       <div className="space-y-8 animate-fade-in">
-
-      {isBrand(profile) ? (
-        // Brand Profile
-        <div className="space-y-6">
+        {isBrand(profile) ? (
+          // Brand Profile
+          <div className="space-y-6">
           <button
             onClick={() => navigate(-1)}
             className="text-ramp-purple-600 hover:text-ramp-purple-700 mb-4 font-medium"
@@ -107,9 +107,7 @@ const PublicProfile: React.FC = () => {
               <div>
                 <p className="text-sm font-medium text-ramp-gray-600 dark:text-ramp-gray-400">Budget Tier</p>
                 <p className="text-ramp-black dark:text-white font-semibold mt-2">
-                  {profile.budgetTier === 'TIER_10K_50K' ? '$10K - $50K' :
-                   profile.budgetTier === 'TIER_50K_200K' ? '$50K - $200K' :
-                   '$200K+'}
+                  {formatBudgetTier(profile.budgetTier)}
                 </p>
               </div>
               {profile.targetInfluencerType && (
@@ -243,7 +241,7 @@ const PublicProfile: React.FC = () => {
             </div>
           )}
         </div>
-      )}
+        )}
       </div>
     </Layout>
   );

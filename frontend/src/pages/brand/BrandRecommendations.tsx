@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Campaign } from '../../shared/types';
+import { formatBudgetTier } from '../../shared/utils';
 import Layout from '../../components/Layout';
 
 const BrandRecommendations: React.FC = () => {
@@ -106,7 +107,7 @@ const BrandRecommendations: React.FC = () => {
                       Budget Tier
                     </p>
                     <p className="text-lg font-bold text-ramp-black dark:text-white">
-                      {campaign.budgetTier}
+                      {formatBudgetTier(campaign.budgetTier)}
                     </p>
                   </div>
                   <div>

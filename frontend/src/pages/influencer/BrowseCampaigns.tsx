@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Campaign } from '../../shared/types';
+import { formatBudgetTier } from '../../shared/utils';
 import Layout from '../../components/Layout';
 
 const BrowseCampaigns: React.FC = () => {
@@ -197,7 +198,7 @@ const BrowseCampaigns: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">Budget:</span>
-                          <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{campaign.budgetTier}</span>
+                          <span className="text-ramp-gray-700 dark:text-ramp-gray-300 font-medium">{formatBudgetTier(campaign.budgetTier)}</span>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-ramp-gray-600 dark:text-ramp-gray-400 font-medium">Needed:</span>
